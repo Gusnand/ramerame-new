@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -29,11 +30,25 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('email', 'password');
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || $user->role_id != 1 || $user->status != 1) {
+            return back()->withErrors([
+                'email' => 'Login gagal. Akun tidak memiliki izin.',
+            ]);
+        }
+
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'Login gagal. Email atau password salah.',
+            ]);
+        }
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended('/dashboard');
     }
 
     /**
