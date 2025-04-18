@@ -44,10 +44,15 @@ class Product extends Model
     ];
     public $timestamps = false;
 
-    public function product_category()
+    public function category()
     {
-        return $this->belongsTo('App\ProductCategory');
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
+
+    // public function product_category()
+    // {
+    //     return $this->belongsTo('App\Models\ProductCategory');
+    // }
 
     public function product_images()
     {
