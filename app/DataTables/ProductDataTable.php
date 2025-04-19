@@ -37,7 +37,7 @@ class ProductDataTable extends DataTable
      */
     public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->orderByDesc('id');
     }
 
     /**
@@ -49,7 +49,7 @@ class ProductDataTable extends DataTable
             ->setTableId('product-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(1)
+            ->orderBy(1, 'desc')
             ->selectStyleSingle()
             ->buttons([
                 Button::make('excel'),

@@ -27,11 +27,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/products/editproduct/{id}', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::get('/products/data', [ProductController::class, 'getData'])->name('products.data');
 
     // ENDPOINT UNTUK .............................................................................
 
     Route::get('dashboard', [ProductController::class, 'index'])->name('dashboard');
-    Route::get('/products/data', [ProductController::class, 'getData'])->name('products.data');
+
 });
 
 
