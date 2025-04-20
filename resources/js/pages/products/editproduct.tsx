@@ -1,9 +1,12 @@
+import HeadingSmall from '@/components/heading-small';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
 type Category = {
   id: number;
@@ -23,6 +26,13 @@ export default function EditProduct({ product, categories }: { product: any; cat
     category: product.product_category_id,
     short_content: product.product_slug,
     content: product.content,
+    term: product.term,
+    status: product.status,
+    expired_date: product.expired_date,
+    invest_month: product.invest_month,
+    account_no: product.account_no,
+    on_behalf_of: product.on_behalf_of,
+    bank_id: product.bank_id,
   });
 
   const handleSubmit = (e: any) => {
@@ -30,63 +40,133 @@ export default function EditProduct({ product, categories }: { product: any; cat
     put(`/products/update/${product.id}`);
   };
 
+  const returnPage = () => {
+    router.get('/products');
+  };
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Edit Produk" />
 
-      <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-        <form onSubmit={handleSubmit} className="max-w-md space-y-4">
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="name">Nama Produk</Label>
-            <Input type="text" id="name" placeholder="name" value={data.name} onChange={(e) => setData('name', e.target.value)} />
-            {errors.name && <p className="text-red-500">{errors.name}</p>}
-          </div>
+      <div className="flex h-full flex-col gap-6 rounded-xl p-4">
+        <form onSubmit={handleSubmit} className="ml-4 flex flex-row gap-4 space-y-6">
+          <div className="flex-1">
+            <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
+              <HeadingSmall title="Product Identity" description="Update your product identity" />
 
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="category">Kategori</Label>
-            <Select value={String(data.category)} onValueChange={(value) => setData('category', Number(value))}>
-              <SelectTrigger className="w-[280px]">
-                <SelectValue placeholder="Pilih Kategori Produk" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={String(category.id)}>
-                    {category.category_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.category && <p className="text-red-500">{errors.category}</p>}
-          </div>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="name">Product Name</Label>
+                <Input
+                  className="mt-1 block w-full"
+                  type="text"
+                  id="name"
+                  placeholder="Input your product name"
+                  value={data.name}
+                  onChange={(e) => setData('name', e.target.value)}
+                />
+                {errors.name && <p className="text-red-500">{errors.name}</p>}
+              </div>
 
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="name">Deskripsi Pendek</Label>
-            <Input
-              type="text"
-              id="short_content"
-              placeholder="Masukan deskripsi pendek"
-              value={data.short_content}
-              onChange={(e) => setData('short_content', e.target.value)}
-            />
-            {errors.short_content && <p className="text-red-500">{errors.short_content}</p>}
-          </div>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="category">Category</Label>
+                <Select value={String(data.category)} onValueChange={(value) => setData('category', Number(value))}>
+                  <SelectTrigger className="mt-1 w-full">
+                    <SelectValue placeholder="Choose category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={String(category.id)}>
+                        {category.category_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.category && <p className="text-red-500">{errors.category}</p>}
+              </div>
 
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="name">Deskripsi Panjang</Label>
-            <Input
-              type="text"
-              id="content"
-              placeholder="Masukan deskripsi pendek"
-              value={data.content}
-              onChange={(e) => setData('content', e.target.value)}
-            />
-            {errors.content && <p className="text-red-500">{errors.content}</p>}
-          </div>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="short_content">Short Description</Label>
+                <Textarea
+                  className="mt-1 w-full"
+                  id="short_content"
+                  placeholder="Input your short description"
+                  value={data.short_content}
+                  onChange={(e) => setData('short_content', e.target.value)}
+                />
+                {errors.short_content && <p className="text-red-500">{errors.short_content}</p>}
+              </div>
 
-          <button type="submit" className="rounded bg-blue-600 px-4 py-2 text-white" disabled={processing}>
-            Simpan Perubahan
-          </button>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="content">Content</Label>
+                <Textarea
+                  className="mt-1 w-full truncate scroll-auto"
+                  id="content"
+                  placeholder="Input your content"
+                  value={data.content}
+                  onChange={(e) => setData('content', e.target.value)}
+                />
+                {errors.content && <p className="text-red-500">{errors.content}</p>}
+              </div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
+              <HeadingSmall title="Additional Product Data" description="Update your other product data" />
+
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="term">Terms & Conditions</Label>
+
+                {/* <Textarea
+                  className="mt-1 block w-full scroll-m-1 truncate"
+                  id="term"
+                  placeholder="Input your terms & conditions"
+                  value={data.term}
+                  onChange={(e) => setData('term', e.target.value)}
+                /> */}
+                {errors.term && <p className="text-red-500">{errors.term}</p>}
+              </div>
+
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="termInput">Upload your terms & conditions</Label>
+                <Input id="term" type="file" />
+                {errors.term && <p className="text-red-500">{errors.term}</p>}
+              </div>
+
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="name">Short Description</Label>
+                <Textarea
+                  className="mt-1 w-full"
+                  id="short_content"
+                  placeholder="Masukan deskripsi pendek"
+                  value={data.short_content}
+                  onChange={(e) => setData('short_content', e.target.value)}
+                />
+                {errors.short_content && <p className="text-red-500">{errors.short_content}</p>}
+              </div>
+
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="name">Content</Label>
+                <Textarea
+                  className="mt-1 w-full"
+                  id="content"
+                  placeholder="Masukan deskripsi pendek"
+                  value={data.content}
+                  onChange={(e) => setData('content', e.target.value)}
+                />
+                {errors.content && <p className="text-red-500">{errors.content}</p>}
+              </div>
+            </div>
+          </div>
         </form>
+
+        <div className="flex flex-row justify-end gap-2">
+          <Button type="submit" disabled={processing}>
+            Save
+          </Button>
+          <Button variant={'outline'} className="ml-2" onClick={returnPage}>
+            Cancel
+          </Button>
+        </div>
       </div>
     </AppLayout>
   );

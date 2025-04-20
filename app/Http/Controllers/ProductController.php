@@ -40,15 +40,13 @@ class ProductController extends Controller
             'product_category_id' => 'required|numeric',
             'product_slug' => 'required|string|max:255',
             'content' => 'required|string|max:255',
-            // 'term' => 'required|string|max:255',
-            // 'termfile' => 'required|string|max:255',
-            // 'status' => 'required|string|max:255',
-            // 'expired_date' => 'required|string|max:255',
-            // 'max_slot' => 'required|string|max:255',
-            // 'invest_amount' => 'required|string|max:255',
-            // 'invest_month' => 'required|string|max:255',
-            // 'platform_fee' => 'required|string|max:255',
-            // 'bank_id' => 'required|string|max:255',
+            'term' => 'required|string',
+            'status' => 'required|string',
+            'expired_date' => 'required|date_format:m/d/Y',
+            'invest_month' => 'required|numeric',
+            'account_no' => 'required|string',
+            'on_behalf_of' => 'required|string',
+            'bank_id' => 'required|numeric',
         ]);
 
         $product->update($validated);
