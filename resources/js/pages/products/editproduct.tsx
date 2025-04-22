@@ -1,4 +1,5 @@
 import HeadingSmall from '@/components/heading-small';
+import RichTextEditor from '@/components/richtext-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import '@blocknote/core/fonts/inter.css';
+import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
 
 type Category = {
@@ -43,6 +46,45 @@ export default function EditProduct({ product, categories }: { product: any; cat
   const returnPage = () => {
     router.get('/products');
   };
+
+  // const handleTermChange = (html) => {
+  //   setData(prev => ({ ...prev, term: html }));
+  // };
+
+  // const editor = useCreateBlockNote({
+  //   initialContent: data.term
+  //     ? (() => {
+  //         try {
+  //           return JSON.parse(data.term);
+  //         } catch (e) {
+  //           return [
+  //             {
+  //               type: 'paragraph',
+  //               content: [{ type: 'text', text: data.term }],
+  //             },
+  //           ];
+  //         }
+  //       })()
+  //     : undefined,
+  // });
+
+  // // Update form data when content changes
+  // useEffect(() => {
+  //   if (editor) {
+  //     const saveChanges = async () => {
+  //       const blocks = editor.topLevelBlocks;
+  //       setData('term', JSON.stringify(blocks));
+  //     };
+
+  //     // Attach the listener
+  //     editor.onEditorContentChange(saveChanges);
+
+  //     // Cleanup function (if needed)
+  //     return () => {
+  //       // No explicit cleanup required for BlockNote, but you can add logic here if necessary
+  //     };
+  //   }
+  // }, [editor, setData]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -115,6 +157,11 @@ export default function EditProduct({ product, categories }: { product: any; cat
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="term">Terms & Conditions</Label>
+                <RichTextEditor value={product.term} onChange={(e) => setData('term', e)} />
+                {/* <BlockNoteView editor={editor} shadCNComponents={{}} /> */}
+                {/* <RichTextEditor initialValue={data.term} onChange={(value) => setData('term', value)} error={errors.term} /> */}
+                {/* <Editor editorSerializedState={editorState} onSerializedChange={(value) => setEditorState(value)} /> */}
+                {/* <Editor editorSerializedState={data.term} onSerializedChange={(e) => setData('term', e)} /> */}
 
                 {/* <Textarea
                   className="mt-1 block w-full scroll-m-1 truncate"
@@ -122,8 +169,8 @@ export default function EditProduct({ product, categories }: { product: any; cat
                   placeholder="Input your terms & conditions"
                   value={data.term}
                   onChange={(e) => setData('term', e.target.value)}
-                /> */}
-                {errors.term && <p className="text-red-500">{errors.term}</p>}
+                />
+                {errors.term && <p className="text-red-500">{errors.term}</p>} */}
               </div>
 
               <div className="grid w-full items-center gap-2">
