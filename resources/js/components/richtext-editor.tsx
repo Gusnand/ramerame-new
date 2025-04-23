@@ -1,4 +1,3 @@
-// components/RichTextEditor.jsx
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -9,8 +8,9 @@ import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import axios from 'axios';
 import {
   AlignCenter,
   AlignLeft,
@@ -33,6 +33,8 @@ import {
   Undo,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { EditorContent } from './ui/editor-content-tiptap';
+import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 type RichTextEditorProps = {
   value: string;
@@ -42,7 +44,7 @@ type RichTextEditorProps = {
 export default function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const [linkUrl, setLinkUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -98,19 +100,25 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
     }
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
-      // Dalam contoh ini, kita hanya menunjukkan alur kerja
-      // Untuk implementasi sebenarnya, Anda perlu mengupload file ke server
-      // dan mendapatkan URL-nya
+      const formData = new FormData();
+      formData.append('image', file);
 
-      // Simulasi upload file
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        editor.chain().focus().setImage({ src: e.target.result }).run();
-      };
-      reader.readAsDataURL(file);
+      try {
+        const response = await axios.post(`/products/editproduct/upload-image`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.data.success) {
+          editor.chain().focus().setImage({ src: response.data.url }).run();
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
   };
 
@@ -119,7 +127,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
   };
 
   return (
-    <div className="rounded-md border">
+    <div className="mt-1 rounded-md border">
       <div className="flex flex-wrap gap-1 border-gray-200 p-2">
         {/* Format controls */}
         <Button
@@ -317,7 +325,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
               </div>
               <p className="text-xs text-gray-500">Or upload an image</p>
               <div>
-                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileUpload} className="hidden" />
+                <Input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileUpload} className="hidden" />
                 <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                   Upload
                 </Button>
@@ -342,8 +350,10 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
-
-      <EditorContent editor={editor} className="prose min-h-[400px] max-w-none p-4 focus:outline-none" />
+      <ScrollArea>
+        <EditorContent editor={editor} className="min-h-100 p-4 focus:outline-none" />
+        <ScrollBar />
+      </ScrollArea>
     </div>
   );
 }

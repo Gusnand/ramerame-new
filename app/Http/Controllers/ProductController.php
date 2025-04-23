@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -52,5 +53,24 @@ class ProductController extends Controller
         $product->update($validated);
 
         return redirect()->route('products/index')->with('success', 'Produk berhasil diperbarui.');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate(['image' => 'required|image|max:2048']);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $url = Storage::disk('public')->url($path);
+
+            return response()->json([
+                'url' => $url,
+                'success' => true
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Image upload failed',
+            'success' => false
+        ], 400);
     }
 }
