@@ -197,3 +197,17 @@
   }
   /* Add other utilities that might be causing errors */
 }
+
+.editor-content {
+  overflow-wrap: break-word !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
+  outline: none !important;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #999;
+  pointer-events: none;
+}

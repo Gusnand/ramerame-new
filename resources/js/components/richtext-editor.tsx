@@ -6,6 +6,7 @@ import Heading from '@tiptap/extension-heading';
 import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
+import { Placeholder } from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
@@ -56,6 +57,9 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         types: ['heading', 'paragraph'],
       }),
       Underline,
+      Placeholder.configure({
+        placeholder: 'Write here...',
+      }),
       Image,
       Link.configure({
         openOnClick: false,
@@ -110,6 +114,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         const response = await axios.post(`/products/editproduct/upload-image`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
           },
         });
 
@@ -118,6 +123,10 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         }
       } catch (error) {
         console.error('Error uploading image:', error);
+        if (axios.isAxiosError(error)) {
+          console.log('Response status:', error.response?.status);
+          console.log('Response data:', error.response?.data);
+        }
       }
     }
   };
@@ -351,8 +360,11 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         </Button>
       </div>
       <ScrollArea>
-        <EditorContent editor={editor} className="min-h-100 p-4 focus:outline-none" />
-        <ScrollBar />
+        <EditorContent
+          editor={editor}
+          className="editor-content min-h-80 p-4 focus-within:shadow-none focus-within:ring-0 focus-within:outline-none focus:border-none focus:ring-0 focus:outline-none"
+        />
+        <ScrollBar className="dark:bg-gray-700" />
       </ScrollArea>
     </div>
   );

@@ -140,13 +140,7 @@ export default function EditProduct({ product, categories }: { product: any; cat
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="content">Content</Label>
-                <Textarea
-                  className="mt-1 w-full truncate scroll-auto"
-                  id="content"
-                  placeholder="Input your content"
-                  value={data.content}
-                  onChange={(e) => setData('content', e.target.value)}
-                />
+                <RichTextEditor value={data.content} onChange={(e) => setData('content', e)} />
                 {errors.content && <p className="text-red-500">{errors.content}</p>}
               </div>
             </div>
@@ -157,7 +151,8 @@ export default function EditProduct({ product, categories }: { product: any; cat
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="term">Terms & Conditions</Label>
-                <RichTextEditor value={product.term} onChange={(e) => setData('term', e)} />
+                <RichTextEditor value={data.term} onChange={(e) => setData('term', e)} />
+                {errors.term && <p className="text-red-500">{errors.term}</p>}
                 {/* <BlockNoteView editor={editor} shadCNComponents={{}} /> */}
                 {/* <RichTextEditor initialValue={data.term} onChange={(value) => setData('term', value)} error={errors.term} /> */}
                 {/* <Editor editorSerializedState={editorState} onSerializedChange={(value) => setEditorState(value)} /> */}
@@ -169,38 +164,28 @@ export default function EditProduct({ product, categories }: { product: any; cat
                   placeholder="Input your terms & conditions"
                   value={data.term}
                   onChange={(e) => setData('term', e.target.value)}
-                />
-                {errors.term && <p className="text-red-500">{errors.term}</p>} */}
+                />*/}
               </div>
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="termInput">Upload your terms & conditions</Label>
                 <Input id="term" type="file" />
-                {errors.term && <p className="text-red-500">{errors.term}</p>}
+                {errors.term && <p className="text-sm text-red-500">{errors.term}</p>}
               </div>
 
               <div className="grid w-full items-center gap-2">
-                <Label htmlFor="name">Short Description</Label>
-                <Textarea
-                  className="mt-1 w-full"
-                  id="short_content"
-                  placeholder="Masukan deskripsi pendek"
-                  value={data.short_content}
-                  onChange={(e) => setData('short_content', e.target.value)}
-                />
-                {errors.short_content && <p className="text-red-500">{errors.short_content}</p>}
-              </div>
-
-              <div className="grid w-full items-center gap-2">
-                <Label htmlFor="name">Content</Label>
-                <Textarea
-                  className="mt-1 w-full"
-                  id="content"
-                  placeholder="Masukan deskripsi pendek"
-                  value={data.content}
-                  onChange={(e) => setData('content', e.target.value)}
-                />
-                {errors.content && <p className="text-red-500">{errors.content}</p>}
+                <Label htmlFor="name">Status</Label>
+                <Select value={data.status} onValueChange={(value) => setData('status', value)}>
+                  <SelectTrigger className="mt-1 w-full">
+                    <SelectValue placeholder="Choose status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DONE">DONE</SelectItem>
+                    <SelectItem value="RUN">RUN</SelectItem>
+                    <SelectItem value="CLOSE">CLOSE</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.status && <p className="text-red-500">{errors.status}</p>}
               </div>
             </div>
           </div>
