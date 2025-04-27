@@ -1,10 +1,9 @@
-import { Slot } from '@radix-ui/react-slot';
+import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
-
-const buttonVariants = cva(
+// Variants dari button (di-reuse dari buttonVariants)
+const linkButtonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
@@ -31,19 +30,18 @@ const buttonVariants = cva(
   },
 );
 
-function Button({
+// Komponen LinkButton
+function Link({
   className,
   variant,
   size,
-  asChild = false,
+  href,
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
+}: React.ComponentProps<'a'> &
+  VariantProps<typeof linkButtonVariants> & {
+    href: string; // Properti wajib untuk <a>
   }) {
-  const Comp = asChild ? Slot : 'button';
-
-  return <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+  return <a href={href} className={cn(linkButtonVariants({ variant, size, className }))} {...props} />;
 }
 
-export { Button, buttonVariants };
+export { Link, linkButtonVariants };

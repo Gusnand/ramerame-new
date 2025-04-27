@@ -74,7 +74,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       }),
       CodeBlock.configure({
         HTMLAttributes: {
-          class: 'bg-gray-100 p-4 rounded font-mono my-2',
+          class: 'dark:bg-gray-700 bg-gray-700 p-4 rounded font-mono my-2',
         },
       }),
     ],

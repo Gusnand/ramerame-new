@@ -4,6 +4,7 @@ use App\Http\Controllers\API\ImageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SalesController;
 
 // Route::get('/', function () {
 //     return Inertia::render('welcome');
@@ -41,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::get('/products/data', [ProductController::class, 'getData'])->name('products.data');
     Route::post('/products/editproduct/upload-image', [ProductController::class, 'store']);
+    Route::get('/products/sales-report/{id}', [SalesController::class, 'index'])->name('products.sales-report');
 
 
     // ENDPOINT UNTUK .............................................................................

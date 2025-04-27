@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button';
+import { Link } from '@/components/ui/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { formatHarga } from '@/lib/helper';
 import { BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { CalendarClock, Pencil } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -32,19 +32,6 @@ export default function Index() {
       setProducts(response.data.data);
     });
   }, []);
-
-  const editProduct = (id: number) => {
-    router.get(`/products/editproduct/${id}`);
-  };
-
-  const deleteProduct = () => {
-    // hapus produk langsung ke db juga
-  };
-
-  const viewBenefit = () => {
-    // masuk ke halaman benefit dari produknya
-    // ini tampilannya halaman kalender yg isi jumlah keuntungan, bisa diswitch daily atau monthly
-  };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -78,12 +65,12 @@ export default function Index() {
                 <TableCell className="text-left">{product.invest_month}</TableCell>
                 <TableCell className="text-left">{formatHarga(product.invest_amount)}</TableCell>
                 <TableCell className="w-full text-center">
-                  <Button variant="ghost" className="" onClick={() => editProduct(product.id)}>
+                  <Link variant="outline" size="icon" className="cursor-pointer" href={`products/editproduct/${product.id}`}>
                     <Pencil />
-                  </Button>
-                  <Button variant="ghost" className="" onClick={viewBenefit}>
+                  </Link>
+                  <Link variant="outline" size="icon" className="cursor-pointer" href={`products/sales-report/${product.id}`}>
                     <CalendarClock />
-                  </Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

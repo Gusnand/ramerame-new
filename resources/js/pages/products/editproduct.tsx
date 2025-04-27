@@ -47,45 +47,6 @@ export default function EditProduct({ product, categories }: { product: any; cat
     router.get('/products');
   };
 
-  // const handleTermChange = (html) => {
-  //   setData(prev => ({ ...prev, term: html }));
-  // };
-
-  // const editor = useCreateBlockNote({
-  //   initialContent: data.term
-  //     ? (() => {
-  //         try {
-  //           return JSON.parse(data.term);
-  //         } catch (e) {
-  //           return [
-  //             {
-  //               type: 'paragraph',
-  //               content: [{ type: 'text', text: data.term }],
-  //             },
-  //           ];
-  //         }
-  //       })()
-  //     : undefined,
-  // });
-
-  // // Update form data when content changes
-  // useEffect(() => {
-  //   if (editor) {
-  //     const saveChanges = async () => {
-  //       const blocks = editor.topLevelBlocks;
-  //       setData('term', JSON.stringify(blocks));
-  //     };
-
-  //     // Attach the listener
-  //     editor.onEditorContentChange(saveChanges);
-
-  //     // Cleanup function (if needed)
-  //     return () => {
-  //       // No explicit cleanup required for BlockNote, but you can add logic here if necessary
-  //     };
-  //   }
-  // }, [editor, setData]);
-
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Edit Produk" />
@@ -153,18 +114,6 @@ export default function EditProduct({ product, categories }: { product: any; cat
                 <Label htmlFor="term">Terms & Conditions</Label>
                 <RichTextEditor value={data.term} onChange={(e) => setData('term', e)} />
                 {errors.term && <p className="text-red-500">{errors.term}</p>}
-                {/* <BlockNoteView editor={editor} shadCNComponents={{}} /> */}
-                {/* <RichTextEditor initialValue={data.term} onChange={(value) => setData('term', value)} error={errors.term} /> */}
-                {/* <Editor editorSerializedState={editorState} onSerializedChange={(value) => setEditorState(value)} /> */}
-                {/* <Editor editorSerializedState={data.term} onSerializedChange={(e) => setData('term', e)} /> */}
-
-                {/* <Textarea
-                  className="mt-1 block w-full scroll-m-1 truncate"
-                  id="term"
-                  placeholder="Input your terms & conditions"
-                  value={data.term}
-                  onChange={(e) => setData('term', e.target.value)}
-                />*/}
               </div>
 
               <div className="grid w-full items-center gap-2">
@@ -180,9 +129,15 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     <SelectValue placeholder="Choose status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="DONE">DONE</SelectItem>
-                    <SelectItem value="RUN">RUN</SelectItem>
-                    <SelectItem value="CLOSE">CLOSE</SelectItem>
+                    <SelectItem className="text-sm" value="DONE">
+                      DONE
+                    </SelectItem>
+                    <SelectItem className="text-sm" value="RUN">
+                      RUN
+                    </SelectItem>
+                    <SelectItem className="text-sm" value="CLOSE">
+                      CLOSE
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.status && <p className="text-red-500">{errors.status}</p>}
