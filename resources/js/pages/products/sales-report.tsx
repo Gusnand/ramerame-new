@@ -53,7 +53,13 @@ export default function SalesReport({
     },
   ];
 
-  const [timeRange, setTimeRange] = React.useState('monthly');
+  const savedTimeRange = localStorage.getItem('timeRange') || 'monthly';
+  const [timeRange, setTimeRange] = React.useState(savedTimeRange);
+
+  const updateTimeRange = (newTimeRange: string) => {
+    setTimeRange(newTimeRange);
+    localStorage.setItem('timeRange', newTimeRange); // Simpan ke localStorage
+  };
 
   // console.log('eom', eom);
   // console.log('omzets', omzets);
@@ -75,14 +81,14 @@ export default function SalesReport({
               <ToggleGroup
                 type="single"
                 value={timeRange}
-                onValueChange={setTimeRange}
+                onValueChange={updateTimeRange}
                 variant="outline"
                 className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
               >
                 <ToggleGroupItem value="monthly">Monthly Sales</ToggleGroupItem>
                 <ToggleGroupItem value="daily">Daily Sales</ToggleGroupItem>
               </ToggleGroup>
-              <Select value={timeRange} onValueChange={setTimeRange}>
+              <Select value={timeRange} onValueChange={updateTimeRange}>
                 <SelectTrigger
                   className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
                   size="sm"
