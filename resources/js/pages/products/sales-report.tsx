@@ -1,11 +1,21 @@
-import { ChartAreaInteractive } from '@/components/chart-area-interactive';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import AppLayout from '@/layouts/app-layout';
+import { formatHarga } from '@/lib/helper';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
+import { FileDown } from 'lucide-react';
 import React from 'react';
 
 type SalesReportProps = {
@@ -18,9 +28,24 @@ type SalesReportProps = {
   product: any;
 
   eom: any[];
+  pagination: any[];
+  dailys: any[];
+  dailysPagination: any[];
 };
 
-export default function SalesReport({ username, omzets, date, month, year, productId, omzetId, product, eom }: SalesReportProps) {
+export default function SalesReport({
+  username,
+  omzets,
+  date,
+  month,
+  year,
+  productId,
+  product,
+  eom,
+  dailys,
+  pagination,
+  dailysPagination,
+}: SalesReportProps) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'Sales Report',
@@ -30,12 +55,16 @@ export default function SalesReport({ username, omzets, date, month, year, produ
 
   const [timeRange, setTimeRange] = React.useState('monthly');
 
+  // console.log('eom', eom);
+  // console.log('omzets', omzets);
+  console.log('dailys', dailys);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Sales Report" />
 
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-        <Card className="@container/card">
+        <Card className="dark:bg-sidebar @container/card">
           <CardHeader>
             <CardTitle>{product.product_name}</CardTitle>
             <CardDescription>
@@ -73,56 +102,143 @@ export default function SalesReport({ username, omzets, date, month, year, produ
             </CardAction>
           </CardHeader>
           <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-            <Table>
-              <TableHeader>
-                <TableRow className="h-20 w-full">
-                  <TableHead className="text-md w-[50px]">Period</TableHead>
-                  <TableHead className="text-md w-[50px]">Upload Date</TableHead>
-                  <TableHead className="text-md w-[50px]">Process Date</TableHead>
-                  <TableHead className="text-md w-[50px]">Amount</TableHead>
-                  <TableHead className="text-md w-[50px]">Status</TableHead>
-                  <TableHead className="text-md w-[50px]">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {eom.length > 0 ? (
-                  eom.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="">{item.period_month}</TableCell>
-                      <TableCell className="">{item.upload_date}</TableCell>
-                      <TableCell className="">{item.process_date}</TableCell>
-                      <TableCell className="">{item.amount}</TableCell>
-                      <TableCell className="">{item.status}</TableCell>
-                      <TableCell className="">{}</TableCell>
+            {timeRange === 'monthly' ? (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="h-20 w-full">
+                      <TableHead className="text-md w-[25px]">Period</TableHead>
+                      <TableHead className="text-md w-[50px]">Upload Date</TableHead>
+                      <TableHead className="text-md w-[50px]">Process Date</TableHead>
+                      <TableHead className="text-md w-[50px]">Amount</TableHead>
+                      <TableHead className="text-md w-[50px]">Status</TableHead>
+                      <TableHead className="text-md w-[50px]">Action</TableHead>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell>No Data Available</TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            <Table>
-              <TableHeader>
-                <TableRow className="h-20 w-full">
-                  <TableHead className="text-md w-[50px]">Date</TableHead>
-                  <TableHead className="text-md w-[50px]">Total Sales</TableHead>
-                  <TableHead className="text-md w-[50px]">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {omzets.map((omzet, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="">{omzet.product_omzet_name}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {eom.length > 0 ? (
+                      eom.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="py-4 break-words whitespace-normal">
+                            {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][item.period_month - 1]}
+                            {'   '}
+                            {item.period_year}
+                          </TableCell>
+                          <TableCell className="py-4 break-words whitespace-normal">{item.upload_date}</TableCell>
+                          <TableCell className="py-4 break-words whitespace-normal">{item.process_date}</TableCell>
+                          <TableCell className="py-4 break-words whitespace-normal">{formatHarga(item.amount)}</TableCell>
+                          <TableCell className="">
+                            {item.status === 'Approved' ? (
+                              <span className="rounded-md px-3 py-2 text-sm dark:bg-green-700">Approved</span>
+                            ) : (
+                              <span className="rounded-md px-3 py-2 text-sm dark:bg-yellow-600">Draft</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="">
+                            <FileDown className="cursor-pointer" />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell>No Data Available</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                <Pagination>
+                  <PaginationContent>
+                    {pagination.map((link, index) => (
+                      <React.Fragment key={index}>
+                        {link.label === '&laquo; Previous' && (
+                          <PaginationItem>
+                            <PaginationPrevious href={link.url || '#'} />
+                          </PaginationItem>
+                        )}
+                        {link.label.match(/^\d+$/) && (
+                          <PaginationItem>
+                            <PaginationLink href={link.url || '#'} isActive={link.active}>
+                              {link.label}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+                        {link.label === '...' && (
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )}
+                        {link.label === 'Next &raquo;' && (
+                          <PaginationItem>
+                            <PaginationNext href={link.url || '#'} />
+                          </PaginationItem>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </PaginationContent>
+                </Pagination>
+              </>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="h-20 w-full">
+                      <TableHead className="text-md w-[50px]">Date</TableHead>
+                      <TableHead className="text-md w-[50px]">Total Sales</TableHead>
+                      <TableHead className="text-md w-[50px]">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dailys.length > 0 ? (
+                      dailys.map((daily, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="py-4 break-words whitespace-normal">{daily.sales_date}</TableCell>
+                          <TableCell className="py-4 break-words whitespace-normal">{formatHarga(daily.sales_amount)}</TableCell>
+                          <TableCell className="py-4 break-words whitespace-normal">
+                            <FileDown className="cursor-pointer" />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell>No Data Available</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                <Pagination>
+                  <PaginationContent>
+                    {dailysPagination.map((link, index) => (
+                      <React.Fragment key={index}>
+                        {link.label === '&laquo; Previous' && (
+                          <PaginationItem>
+                            <PaginationPrevious href={link.url || '#'} />
+                          </PaginationItem>
+                        )}
+                        {link.label.match(/^\d+$/) && (
+                          <PaginationItem>
+                            <PaginationLink href={link.url || '#'} isActive={link.active}>
+                              {link.label}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+                        {link.label === '...' && (
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )}
+                        {link.label === 'Next &raquo;' && (
+                          <PaginationItem>
+                            <PaginationNext href={link.url || '#'} />
+                          </PaginationItem>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </PaginationContent>
+                </Pagination>
+              </>
+            )}
           </CardContent>
         </Card>
-
-        <ChartAreaInteractive />
       </div>
     </AppLayout>
   );

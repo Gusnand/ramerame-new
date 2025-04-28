@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DailySalesReport;
+use App\Models\ProductCategory;
+use App\Models\TrxEom;
 
 class Product extends Model
 {
@@ -67,6 +70,16 @@ class Product extends Model
     public function product_omzets()
     {
         return $this->hasMany('App\ProductOmzet');
+    }
+
+    public function trxEoms()
+    {
+        return $this->hasMany(TrxEom::class, 'product_id');
+    }
+
+    public function daily_sales_reports()
+    {
+        return $this->hasMany(DailySalesReport::class, 'product_id');
     }
 
     public function product_cctvs()
