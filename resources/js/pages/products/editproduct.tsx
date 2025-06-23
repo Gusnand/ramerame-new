@@ -1,3 +1,4 @@
+import { DatePicker } from '@/components/date-picker';
 import HeadingSmall from '@/components/heading-small';
 import RichTextEditor from '@/components/richtext-editor';
 import { Button } from '@/components/ui/button';
@@ -52,7 +53,7 @@ export default function EditProduct({ product, categories }: { product: any; cat
       <Head title="Edit Produk" />
 
       <div className="flex h-full flex-col gap-6 rounded-xl p-4">
-        <form onSubmit={handleSubmit} className="ml-4 flex flex-row gap-4 space-y-6">
+        <form onSubmit={handleSubmit} className="ml-4 flex flex-col gap-4 space-y-6">
           <div className="flex-1">
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Product Identity" description="Update your product identity" />
@@ -141,6 +142,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                   </SelectContent>
                 </Select>
                 {errors.status && <p className="text-red-500">{errors.status}</p>}
+              </div>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="name">Expired Date</Label>
+                <DatePicker value={data.expired_date} onChange={(e) => setData('expired_date', e)}></DatePicker>
               </div>
             </div>
           </div>
