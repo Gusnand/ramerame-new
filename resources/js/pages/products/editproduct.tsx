@@ -4,7 +4,7 @@ import RichTextEditor from '@/components/richtext-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -105,12 +105,6 @@ export default function EditProduct({ product, categories }: { product: any; cat
                 <RichTextEditor value={data.content} onChange={(e) => setData('content', e)} />
                 {errors.content && <p className="text-red-500">{errors.content}</p>}
               </div>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
-              <HeadingSmall title="Additional Product Data" description="Update your other product data" />
-
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="term">Terms & Conditions</Label>
                 <RichTextEditor value={data.term} onChange={(e) => setData('term', e)} />
@@ -124,7 +118,7 @@ export default function EditProduct({ product, categories }: { product: any; cat
               </div>
 
               <div className="grid w-full items-center gap-2">
-                <Label htmlFor="name">Status</Label>
+                <Label htmlFor="status">Status</Label>
                 <Select value={data.status} onValueChange={(value) => setData('status', value)}>
                   <SelectTrigger className="mt-1 w-full">
                     <SelectValue placeholder="Choose status" />
@@ -144,8 +138,273 @@ export default function EditProduct({ product, categories }: { product: any; cat
                 {errors.status && <p className="text-red-500">{errors.status}</p>}
               </div>
               <div className="grid w-full items-center gap-2">
-                <Label htmlFor="name">Expired Date</Label>
+                <Label htmlFor="expired_date">Expired Date</Label>
                 <DatePicker value={data.expired_date} onChange={(e) => setData('expired_date', e)}></DatePicker>
+              </div>
+              <div className="flex w-full flex-row gap-4">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="max_slot">Max Slot</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="max_slot"
+                    placeholder="input your product max slot"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {errors.name && <p className="text-red-500">{errors.expired_date}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="platform_fee">Platform Fee</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="platform_fee"
+                    placeholder="input platform fee"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+              </div>
+              <div className="flex w-full flex-row gap-4">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="invest_price">Invest Price</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="invest_price"
+                    placeholder="input your invest price"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {errors.name && <p className="text-red-500">{errors.expired_date}</p>}
+                  {/* INVEST PRICE INI NANTI KUNCI FORMNYA KALAU SUDAH ADA ANGKA DARI DB, TIDAK BOLEH DIUBAH */}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="invest_duration">Invest Duration</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="invest_duration"
+                    placeholder="input your invest duration"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+              </div>
+              <div className="flex w-full flex-row gap-4">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="bank">Bank Account</Label>
+                  <Select value={data.bank} onValueChange={(value) => setData('bank', value)}>
+                    <SelectTrigger className="mt-1 w-full">
+                      <SelectValue placeholder="Choose bank" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-96 overflow-y-auto">
+                      <SelectGroup>
+                        <SelectLabel>Bank</SelectLabel>
+                        <SelectItem className="text-sm" value="DONE">
+                          BNI (Bank Negara Indonesia)
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="RUN">
+                          BRI (Bank Rakyat Indonesia)
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          BCA (Bank Central Asia)
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Mandiri
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          BPD Bali (Bank Pembangunan Daerah)
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank BNI Syariah
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Mandiri Syariah
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank CIMB Niaga
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank CIMB Niaga Syariah
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Muamalat
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank BTPN
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Jenius
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank BRI Syariah
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank BTN
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Permata
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Danamon
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Maybank
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Mega
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Bukopin
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Commonwealth
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank BCA Syariah
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Citibank
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank NTB
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank NTB Syariah
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          OCBC NISP
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          BPR Lestari
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank INA
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Bank Syariah Indonesia
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Superbank Indonesia
+                        </SelectItem>
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel className="mt-2">Others</SelectLabel>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Indosat Dompetku
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Telkomsel TCash
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          LinkAJA
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          DANA
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          BCA Digital
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          KSP Pertiwi
+                        </SelectItem>
+                        <SelectItem className="text-sm" value="CLOSE">
+                          Fliptech Lentera
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {errors.name && <p className="text-red-500">{errors.expired_date}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="account_number">Account Number</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="account_number"
+                    placeholder="input your account number"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="account_name">Account Name</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="account_name"
+                    placeholder="input your account name"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+              </div>
+              <div className="flex w-full flex-row gap-4">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="">Total Unit</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="total_unit"
+                    placeholder="input total unit"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="">Price per Unit</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="price_per_unit"
+                    placeholder="input price per unit"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="">Remaining Unit</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="remaining_unit"
+                    placeholder="input remaining unit"
+                    // value={data.max_slot}
+                    // onChange={(e) => setData('max_slot', e.target.value)}
+                  />
+                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
+              <HeadingSmall title="Additional Product Data" description="Update your other product data" />
+
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="product_image" className="mb-2">
+                  Product Image
+                </Label>
+                <div>
+                  <Label htmlFor="product_image_1">Image 1</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="image"
+                    id="product_image_1"
+                    placeholder="Input your product image"
+                    value={data.image_1}
+                    onChange={(e) => setData('image_1', e.target.value)}
+                  />
+                  {errors.image_1 && <p className="text-red-500">{errors.image_1}</p>}
+                </div>
               </div>
             </div>
           </div>
