@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\DailySalesReport;
 use App\Models\ProductCategory;
 use App\Models\TrxEom;
+use App\Models\ProductCCTVSettings;
+use App\Models\Bank;
 
 class Product extends Model
 {
@@ -82,9 +84,14 @@ class Product extends Model
         return $this->hasMany(DailySalesReport::class, 'product_id');
     }
 
+    // public function product_cctvs()
+    // {
+    //     return $this->hasMany('App\Models\ProductCCTVSettings');
+    // }
+
     public function product_cctvs()
     {
-        return $this->hasMany('App\ProductCctvSettings');
+        return $this->hasMany(ProductCCTVSettings::class);
     }
 
     public function product_documents()

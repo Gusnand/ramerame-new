@@ -1,5 +1,6 @@
 import { DatePicker } from '@/components/date-picker';
 import ImageDropzone from '@/components/dropzone';
+
 import HeadingSmall from '@/components/heading-small';
 import RichTextEditor from '@/components/richtext-editor';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
 type Category = {
   id: number;
@@ -24,14 +27,31 @@ type Bank = {
   label: string;
 };
 
-export default function EditProduct({ product, categories, banks }: { product: any; categories: Category[]; banks: Bank[] }) {
+type CCTVSettings = {
+  cctv_username: string;
+  cctv_password?: string; // Password bisa jadi tidak dikirim balik dari server
+  cctv_cloud_serial: string;
+  cctv_name: string;
+};
+
+export default function EditProduct({
+  product,
+  categories,
+  banks,
+  cctv_settings,
+}: {
+  product: any;
+  categories: Category[];
+  banks: Bank[];
+  cctv_settings: CCTVSettings | null;
+}) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'Edit Produk',
       href: `/products/editproduct/${product.id}`,
     },
   ];
-
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { data, setData, put, processing, errors } = useForm({
     name: product.product_name,
     category: product.product_category_id,
@@ -43,15 +63,23 @@ export default function EditProduct({ product, categories, banks }: { product: a
     invest_month: product.invest_month,
     max_slot: product.max_slot,
     platform_fee: product.platform_fee,
-    invest_price: product.invest_price,
-    invest_duration: product.invest_duration,
-    total_unit: product.total_unit,
-    price_per_unit: product.price_per_unit,
-    remaining_unit: product.remaining_unit,
+    invest_amount: product.invest_amount,
+    invest_duration: product.invest_month,
+    total_unit: product.ec_unit,
+    price_per_unit: product.ec_rate,
+    remaining_unit: product.ec_unit_remaining,
     image_1: null,
+    image_2: null,
+    image_3: null,
     account_no: product.account_no,
     on_behalf_of: product.on_behalf_of,
     bank_id: product.bank_id,
+    embed_map: product.embedmap,
+    address: product.address,
+    cctv_username: cctv_settings?.cctv_username ?? '',
+    cctv_password: cctv_settings?.cctv_password ?? '',
+    cctv_cloud_serial: cctv_settings?.cctv_cloud_serial ?? '',
+    cctv_name: cctv_settings?.cctv_name ?? '',
   });
 
   const handleSubmit = (e: any) => {
@@ -184,17 +212,17 @@ export default function EditProduct({ product, categories, banks }: { product: a
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="invest_price">Invest Price</Label>
+                  <Label htmlFor="invest_amount">Invest Amount</Label>
                   <Input
                     className="mt-1 block w-full"
                     type="number"
-                    id="invest_price"
-                    placeholder="input your invest price"
-                    value={data.invest_price}
-                    onChange={(e) => setData('invest_price', Number(e.target.value))}
-                    disabled={!!product.invest_price} // Kunci jika sudah ada nilai dari DB
+                    id="invest_amount"
+                    placeholder="input your invest amount"
+                    value={data.invest_amount}
+                    onChange={(e) => setData('invest_amount', Number(e.target.value))}
+                    disabled={!!data.invest_amount}
                   />
-                  {errors.invest_price && <p className="text-red-500">{errors.invest_price}</p>}
+                  {errors.invest_amount && <p className="text-red-500">{errors.invest_amount}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="invest_duration">Invest Duration</Label>
@@ -203,10 +231,10 @@ export default function EditProduct({ product, categories, banks }: { product: a
                     type="number"
                     id="invest_duration"
                     placeholder="input your invest duration"
-                    value={data.invest_duration}
-                    onChange={(e) => setData('invest_duration', Number(e.target.value))}
+                    value={data.invest_month}
+                    onChange={(e) => setData('invest_month', Number(e.target.value))}
                   />
-                  {errors.invest_duration && <p className="text-red-500">{errors.invest_duration}</p>}
+                  {errors.invest_month && <p className="text-red-500">{errors.invest_month}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
@@ -241,18 +269,17 @@ export default function EditProduct({ product, categories, banks }: { product: a
                   />
                   {errors.account_no && <p className="text-red-500">{errors.account_no}</p>}
                 </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="account_name">Account Name</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="account_name"
-                    placeholder="input your account name"
-                    value={data.on_behalf_of}
-                    onChange={(e) => setData('on_behalf_of', e.target.value)}
-                  />
-                  {errors.on_behalf_of && <p className="text-red-500">{errors.on_behalf_of}</p>}
-                </div>
+              </div>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="account_name">Account Name</Label>
+                <Textarea
+                  className="mt-1 block w-full"
+                  id="account_name"
+                  placeholder="input your account name"
+                  value={data.on_behalf_of}
+                  onChange={(e) => setData('on_behalf_of', e.target.value)}
+                />
+                {errors.on_behalf_of && <p className="text-red-500">{errors.on_behalf_of}</p>}
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="grid w-full items-center gap-2">
@@ -264,6 +291,7 @@ export default function EditProduct({ product, categories, banks }: { product: a
                     placeholder="input total unit"
                     value={data.total_unit}
                     onChange={(e) => setData('total_unit', Number(e.target.value))}
+                    disabled={!!data.total_unit}
                   />
                   {errors.total_unit && <p className="text-red-500">{errors.total_unit}</p>}
                 </div>
@@ -276,6 +304,7 @@ export default function EditProduct({ product, categories, banks }: { product: a
                     placeholder="input price per unit"
                     value={data.price_per_unit}
                     onChange={(e) => setData('price_per_unit', Number(e.target.value))}
+                    disabled={!!data.price_per_unit}
                   />
                   {errors.price_per_unit && <p className="text-red-500">{errors.price_per_unit}</p>}
                 </div>
@@ -288,6 +317,7 @@ export default function EditProduct({ product, categories, banks }: { product: a
                     placeholder="input remaining unit"
                     value={data.remaining_unit}
                     onChange={(e) => setData('remaining_unit', Number(e.target.value))}
+                    disabled={!!data.remaining_unit}
                   />
                   {errors.remaining_unit && <p className="text-red-500">{errors.remaining_unit}</p>}
                 </div>
@@ -297,12 +327,131 @@ export default function EditProduct({ product, categories, banks }: { product: a
           <div className="flex-1">
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Additional Product Data" description="Update your other product data" />
-
-              <div className="flex flex-row gap-4">
+              <Label htmlFor="Product Images">Product Images</Label>
+              <div className="flex flex-row gap-6">
                 <div className="grid items-center gap-2">
                   <Label htmlFor="product_image_1">Image 1</Label>
                   <ImageDropzone value={data.image_1 || product.image_1_url} onChange={(file) => setData('image_1', file)} />
                   {errors.image_1 && <p className="text-red-500">{errors.image_1}</p>}
+                </div>
+                <div className="grid items-center gap-2">
+                  <Label htmlFor="product_image_2">Image 2</Label>
+                  <ImageDropzone value={data.image_2 || product.image_2_url} onChange={(file) => setData('image_2', file)} />
+                  {errors.image_2 && <p className="text-red-500">{errors.image_2}</p>}
+                </div>
+                <div className="grid items-center gap-2">
+                  <Label htmlFor="product_image_3">Image 3</Label>
+                  <ImageDropzone value={data.image_3 || product.image_3_url} onChange={(file) => setData('image_3', file)} />
+                  {errors.image_3 && <p className="text-red-500">{errors.image_3}</p>}
+                </div>
+              </div>
+
+              <Label htmlFor="Google Maps Settings">Google Maps Location</Label>
+              <div className="grid items-center gap-2">
+                <Label htmlFor="Address">Address</Label>
+                <Input
+                  className="mt-1 block w-full"
+                  type="text"
+                  id="address"
+                  placeholder="Input your product address"
+                  value={data.address}
+                  onChange={(e) => setData('address', e.target.value)}
+                />
+                {errors.address && <p className="text-red-500">{errors.address}</p>}
+              </div>
+              <div className="flex flex-row items-start gap-6">
+                <div className="grid items-center gap-2">
+                  <Label htmlFor="Address">Google Maps Link</Label>
+                  <Textarea
+                    id="embedmap"
+                    placeholder="Input your Google Maps embed link"
+                    value={data.embed_map}
+                    onChange={(e) => setData('embed_map', e.target.value)}
+                    rows={4}
+                  />
+                  {errors.embed_map && <p className="text-red-500">{errors.embed_map}</p>}
+                </div>
+
+                {data.embed_map && (
+                  <div className="items-start gap-2">
+                    <Label>Map Preview</Label>
+                    <div className="mt-2 aspect-video h-full w-full self-start overflow-hidden rounded-md">
+                      <iframe
+                        // width="100%"
+                        // height="100%"
+                        src={data.embed_map}
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Product Location Map Preview"
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <Label htmlFor="cctv_settings">CCTV Settings</Label>
+              <div className="flex w-full flex-row gap-6">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="cctv_name">CCTV Name</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="cctv_name"
+                    placeholder="e.g., CCTV Teras Depan"
+                    value={data.cctv_name}
+                    onChange={(e) => setData('cctv_name', e.target.value)}
+                  />
+                  {errors.cctv_name && <p className="text-red-500">{errors.cctv_name}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="cctv_cloud_serial">Cloud Serial / SN</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="cctv_cloud_serial"
+                    placeholder="e.g., J12345678"
+                    value={data.cctv_cloud_serial}
+                    onChange={(e) => setData('cctv_cloud_serial', e.target.value)}
+                  />
+                  {errors.cctv_cloud_serial && <p className="text-red-500">{errors.cctv_cloud_serial}</p>}
+                </div>
+              </div>
+              <div className="flex w-full flex-row gap-6">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="cctv_username">CCTV Username</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="cctv_username"
+                    placeholder="e.g., admin"
+                    value={data.cctv_username}
+                    onChange={(e) => setData('cctv_username', e.target.value)}
+                  />
+                  {errors.cctv_username && <p className="text-red-500">{errors.cctv_username}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="cctv_password">CCTV Password</Label>
+                  <div className="relative">
+                    <Input
+                      className="mt-1 block w-full pr-10"
+                      type={isPasswordVisible ? 'text' : 'password'}
+                      id="cctv_password"
+                      placeholder="Input your CCTV Password"
+                      value={data.cctv_password}
+                      onChange={(e) => setData('cctv_password', e.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute inset-y-0 right-0 h-full px-3"
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                      {isPasswordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  {errors.cctv_password && <p className="text-red-500">{errors.cctv_password}</p>}
                 </div>
               </div>
             </div>

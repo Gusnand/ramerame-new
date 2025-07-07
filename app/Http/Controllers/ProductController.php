@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Bank;
+use App\Models\ProductCCTVSettings;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -23,7 +24,7 @@ class ProductController extends Controller
     }
     public function edit($id)
     {
-        $product = Product::with('category')->findOrFail($id);
+        $product = Product::with(['category', 'product_cctvs'])->findOrFail($id);
         $categories = ProductCategory::all();
         $banks = Bank::where('is_deleted', false)
             ->orderBy('bank_name')
@@ -39,6 +40,7 @@ class ProductController extends Controller
             'product' => $product,
             'categories' => $categories,
             'banks' => $banks,
+            'cctv_settings' => $product->product_cctvs->first(),
         ]);
     }
 
@@ -57,9 +59,24 @@ class ProductController extends Controller
             'account_no' => 'required|string',
             'on_behalf_of' => 'required|string',
             'bank_id' => 'required|numeric',
+            'address' => 'nullable|string',
+            'embed_map' => 'nullable|string',
+            'cctv_username' => 'nullable|string|max:255',
+            'cctv_password' => 'nullable|string|max:255',
+            'cctv_cloud_serial' => 'nullable|string|max:255',
+            'cctv_name' => 'nullable|string|max:255',
         ]);
 
         $product->update($validated);
+        $product->product_cctvs()->updateOrCreate(
+            ['product_id' => $product->id], // Kondisi untuk mencari record
+            [ // Data untuk diupdate atau dibuat
+                'cctv_username' => $validated['cctv_username'],
+                'cctv_password' => $validated['cctv_password'],
+                'cctv_cloud_serial' => $validated['cctv_cloud_serial'],
+                'cctv_name' => $validated['cctv_name'],
+            ]
+        );
 
         return redirect()->route('products/index')->with('success', 'Produk berhasil diperbarui.');
     }
