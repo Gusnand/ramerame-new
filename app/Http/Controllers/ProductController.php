@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\Bank;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -24,13 +25,21 @@ class ProductController extends Controller
     {
         $product = Product::with('category')->findOrFail($id);
         $categories = ProductCategory::all();
+        $banks = Bank::where('is_deleted', false)
+            ->orderBy('bank_name')
+            ->get()
+            ->map(function ($bank) {
+                return [
+                    'value' => $bank->id,
+                    'label' => $bank->bank_name,
+                ];
+            })->toArray();
 
         return Inertia::render('products/editproduct', [
             'product' => $product,
-            'categories' => $categories
+            'categories' => $categories,
+            'banks' => $banks,
         ]);
-        // $product = Product::findOrFail($id);
-        // return Inertia::render('products/editproduct', ['product' => $product]);
     }
 
     public function update(Request $request, $id)

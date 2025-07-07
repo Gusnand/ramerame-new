@@ -1,4 +1,5 @@
 import { DatePicker } from '@/components/date-picker';
+import ImageDropzone from '@/components/dropzone';
 import HeadingSmall from '@/components/heading-small';
 import RichTextEditor from '@/components/richtext-editor';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,13 @@ type Category = {
   category_name: string;
 };
 
-export default function EditProduct({ product, categories }: { product: any; categories: Category[] }) {
+type Bank = {
+  id: number;
+  value: string;
+  label: string;
+};
+
+export default function EditProduct({ product, categories, banks }: { product: any; categories: Category[]; banks: Bank[] }) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'Edit Produk',
@@ -34,6 +41,14 @@ export default function EditProduct({ product, categories }: { product: any; cat
     status: product.status,
     expired_date: product.expired_date,
     invest_month: product.invest_month,
+    max_slot: product.max_slot,
+    platform_fee: product.platform_fee,
+    invest_price: product.invest_price,
+    invest_duration: product.invest_duration,
+    total_unit: product.total_unit,
+    price_per_unit: product.price_per_unit,
+    remaining_unit: product.remaining_unit,
+    image_1: null,
     account_no: product.account_no,
     on_behalf_of: product.on_behalf_of,
     bank_id: product.bank_id,
@@ -53,7 +68,7 @@ export default function EditProduct({ product, categories }: { product: any; cat
       <Head title="Edit Produk" />
 
       <div className="flex h-full flex-col gap-6 rounded-xl p-4">
-        <form onSubmit={handleSubmit} className="ml-4 flex flex-col gap-4 space-y-6">
+        <form onSubmit={handleSubmit} className="ml-4 flex flex-col gap-6">
           <div className="flex-1">
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Product Identity" description="Update your product identity" />
@@ -149,10 +164,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="max_slot"
                     placeholder="input your product max slot"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.max_slot}
+                    onChange={(e) => setData('max_slot', Number(e.target.value))}
                   />
-                  {errors.name && <p className="text-red-500">{errors.expired_date}</p>}
+                  {errors.max_slot && <p className="text-red-500">{errors.max_slot}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="platform_fee">Platform Fee</Label>
@@ -161,10 +176,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="platform_fee"
                     placeholder="input platform fee"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.platform_fee}
+                    onChange={(e) => setData('platform_fee', Number(e.target.value))}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.platform_fee && <p className="text-red-500">{errors.platform_fee}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
@@ -175,11 +190,11 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="invest_price"
                     placeholder="input your invest price"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.invest_price}
+                    onChange={(e) => setData('invest_price', Number(e.target.value))}
+                    disabled={!!product.invest_price} // Kunci jika sudah ada nilai dari DB
                   />
-                  {errors.name && <p className="text-red-500">{errors.expired_date}</p>}
-                  {/* INVEST PRICE INI NANTI KUNCI FORMNYA KALAU SUDAH ADA ANGKA DARI DB, TIDAK BOLEH DIUBAH */}
+                  {errors.invest_price && <p className="text-red-500">{errors.invest_price}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="invest_duration">Invest Duration</Label>
@@ -188,137 +203,31 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="invest_duration"
                     placeholder="input your invest duration"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.invest_duration}
+                    onChange={(e) => setData('invest_duration', Number(e.target.value))}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.invest_duration && <p className="text-red-500">{errors.invest_duration}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="bank">Bank Account</Label>
-                  <Select value={data.bank} onValueChange={(value) => setData('bank', value)}>
+                  <Select value={String(data.bank_id)} onValueChange={(value) => setData('bank_id', Number(value))}>
                     <SelectTrigger className="mt-1 w-full">
                       <SelectValue placeholder="Choose bank" />
                     </SelectTrigger>
                     <SelectContent className="max-h-96 overflow-y-auto">
                       <SelectGroup>
                         <SelectLabel>Bank</SelectLabel>
-                        <SelectItem className="text-sm" value="DONE">
-                          BNI (Bank Negara Indonesia)
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="RUN">
-                          BRI (Bank Rakyat Indonesia)
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          BCA (Bank Central Asia)
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Mandiri
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          BPD Bali (Bank Pembangunan Daerah)
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank BNI Syariah
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Mandiri Syariah
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank CIMB Niaga
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank CIMB Niaga Syariah
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Muamalat
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank BTPN
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Jenius
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank BRI Syariah
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank BTN
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Permata
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Danamon
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Maybank
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Mega
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Bukopin
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Commonwealth
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank BCA Syariah
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Citibank
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank NTB
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank NTB Syariah
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          OCBC NISP
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          BPR Lestari
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank INA
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Bank Syariah Indonesia
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Superbank Indonesia
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel className="mt-2">Others</SelectLabel>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Indosat Dompetku
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Telkomsel TCash
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          LinkAJA
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          DANA
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          BCA Digital
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          KSP Pertiwi
-                        </SelectItem>
-                        <SelectItem className="text-sm" value="CLOSE">
-                          Fliptech Lentera
-                        </SelectItem>
+                        {banks.map((bank) => (
+                          <SelectItem key={bank.value} value={String(bank.value)} className="text-sm">
+                            {bank.label}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {errors.name && <p className="text-red-500">{errors.expired_date}</p>}
+                  {errors.bank_id && <p className="text-red-500">{errors.bank_id}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="account_number">Account Number</Label>
@@ -327,10 +236,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="account_number"
                     placeholder="input your account number"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.account_no}
+                    onChange={(e) => setData('account_no', e.target.value)}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.account_no && <p className="text-red-500">{errors.account_no}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="account_name">Account Name</Label>
@@ -339,10 +248,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="text"
                     id="account_name"
                     placeholder="input your account name"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.on_behalf_of}
+                    onChange={(e) => setData('on_behalf_of', e.target.value)}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.on_behalf_of && <p className="text-red-500">{errors.on_behalf_of}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
@@ -353,10 +262,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="total_unit"
                     placeholder="input total unit"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.total_unit}
+                    onChange={(e) => setData('total_unit', Number(e.target.value))}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.total_unit && <p className="text-red-500">{errors.total_unit}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="">Price per Unit</Label>
@@ -365,10 +274,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="price_per_unit"
                     placeholder="input price per unit"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.price_per_unit}
+                    onChange={(e) => setData('price_per_unit', Number(e.target.value))}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.price_per_unit && <p className="text-red-500">{errors.price_per_unit}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="">Remaining Unit</Label>
@@ -377,10 +286,10 @@ export default function EditProduct({ product, categories }: { product: any; cat
                     type="number"
                     id="remaining_unit"
                     placeholder="input remaining unit"
-                    // value={data.max_slot}
-                    // onChange={(e) => setData('max_slot', e.target.value)}
+                    value={data.remaining_unit}
+                    onChange={(e) => setData('remaining_unit', Number(e.target.value))}
                   />
-                  {/* {errors.name && <p className="text-red-500">{errors.platform_fee}</p>} */}
+                  {errors.remaining_unit && <p className="text-red-500">{errors.remaining_unit}</p>}
                 </div>
               </div>
             </div>
@@ -389,35 +298,24 @@ export default function EditProduct({ product, categories }: { product: any; cat
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Additional Product Data" description="Update your other product data" />
 
-              <div className="grid w-full items-center gap-2">
-                <Label htmlFor="product_image" className="mb-2">
-                  Product Image
-                </Label>
-                <div>
+              <div className="flex flex-row gap-4">
+                <div className="grid items-center gap-2">
                   <Label htmlFor="product_image_1">Image 1</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="image"
-                    id="product_image_1"
-                    placeholder="Input your product image"
-                    value={data.image_1}
-                    onChange={(e) => setData('image_1', e.target.value)}
-                  />
+                  <ImageDropzone value={data.image_1 || product.image_1_url} onChange={(file) => setData('image_1', file)} />
                   {errors.image_1 && <p className="text-red-500">{errors.image_1}</p>}
                 </div>
               </div>
             </div>
           </div>
+          <div className="flex flex-row justify-end gap-2 px-6">
+            <Button type="submit" disabled={processing}>
+              Save Changes
+            </Button>
+            <Button type="button" variant={'outline'} className="ml-2" onClick={returnPage}>
+              Cancel
+            </Button>
+          </div>
         </form>
-
-        <div className="flex flex-row justify-end gap-2">
-          <Button type="submit" disabled={processing}>
-            Save
-          </Button>
-          <Button variant={'outline'} className="ml-2" onClick={returnPage}>
-            Cancel
-          </Button>
-        </div>
       </div>
     </AppLayout>
   );

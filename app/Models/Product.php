@@ -102,9 +102,14 @@ class Product extends Model
         return $this->hasMany('App\ProductInsurance', 'id', 'product_id');
     }
 
+    // public function bank()
+    // {
+    //     return $this->hasOne('App\Models\Bank', 'id', 'bank_id');
+    // }
+
     public function bank()
     {
-        return $this->hasOne('App\Bank', 'id', 'bank_id');
+        return $this->belongsTo(Bank::class, 'bank_id');
     }
 
     public function insurances()
