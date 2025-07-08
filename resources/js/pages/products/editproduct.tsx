@@ -1,5 +1,5 @@
 import { DatePicker } from '@/components/date-picker';
-import ImageDropzone from '@/components/dropzone';
+import ImageDropzone from '@/components/dropzone_backup';
 
 import HeadingSmall from '@/components/heading-small';
 import RichTextEditor from '@/components/richtext-editor';
