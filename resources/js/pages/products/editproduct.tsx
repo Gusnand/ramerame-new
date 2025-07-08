@@ -32,6 +32,10 @@ type CCTVSettings = {
   cctv_password?: string; // Password bisa jadi tidak dikirim balik dari server
   cctv_cloud_serial: string;
   cctv_name: string;
+  cctv_android_app?: string;
+  cctv_ios_app?: string;
+  guidance?: string;
+  attachment?: string;
 };
 
 export default function EditProduct({
@@ -80,6 +84,10 @@ export default function EditProduct({
     cctv_password: cctv_settings?.cctv_password ?? '',
     cctv_cloud_serial: cctv_settings?.cctv_cloud_serial ?? '',
     cctv_name: cctv_settings?.cctv_name ?? '',
+    android_app: cctv_settings?.cctv_android_app ?? '',
+    ios_app: cctv_settings?.cctv_ios_app ?? '',
+    guidance: cctv_settings?.guidance ?? '',
+    attachment: cctv_settings?.attachment ?? '',
   });
 
   const handleSubmit = (e: any) => {
@@ -452,6 +460,58 @@ export default function EditProduct({
                     </Button>
                   </div>
                   {errors.cctv_password && <p className="text-red-500">{errors.cctv_password}</p>}
+                </div>
+              </div>
+              <div className="flex w-full flex-row gap-6">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="android_app">Android App</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="android_app"
+                    placeholder="Input your Android App URL"
+                    value={data.android_app}
+                    onChange={(e) => setData('android_app', e.target.value)}
+                  />
+                  {errors.android_app && <p className="text-red-500">{errors.android_app}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="ios_app">IOS App</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="ios_app"
+                    placeholder="Input your IOS App URL"
+                    value={data.ios_app}
+                    onChange={(e) => setData('ios_app', e.target.value)}
+                  />
+                  {errors.ios_app && <p className="text-red-500">{errors.ios_app}</p>}
+                </div>
+              </div>
+              <div className="flex w-full flex-row gap-6">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="guidance">Guidance</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="guidance"
+                    placeholder="Input your Android App URL"
+                    value={data.guidance}
+                    onChange={(e) => setData('guidance', e.target.value)}
+                  />
+                  {errors.guidance && <p className="text-red-500">{errors.guidance}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="attachment">Attachment</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="attachment"
+                    placeholder="Input your attachment URL"
+                    value={data.attachment}
+                    onChange={(e) => setData('attachment', e.target.value)}
+                  />
+                  {errors.attachment && <p className="text-red-500">{errors.attachment}</p>}
                 </div>
               </div>
             </div>

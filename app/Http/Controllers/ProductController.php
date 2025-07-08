@@ -65,6 +65,10 @@ class ProductController extends Controller
             'cctv_password' => 'nullable|string|max:255',
             'cctv_cloud_serial' => 'nullable|string|max:255',
             'cctv_name' => 'nullable|string|max:255',
+            'cctv_android_app' => 'nullable|string|max:255',
+            'cctv_ios_app' => 'nullable|string|max:255',
+            'guidance' => 'nullable|string|max:255',
+            'attachment' => 'nullable|string|max:255',
         ]);
 
         $product->update($validated);
@@ -75,6 +79,10 @@ class ProductController extends Controller
                 'cctv_password' => $validated['cctv_password'],
                 'cctv_cloud_serial' => $validated['cctv_cloud_serial'],
                 'cctv_name' => $validated['cctv_name'],
+                'cctv_android_app' => $validated['cctv_android_app'],
+                'cctv_ios_app' => $validated['cctv_ios_app'],
+                'guidance' => $validated['guidance'],
+                'attachment' => $validated['attachment'],
             ]
         );
 
