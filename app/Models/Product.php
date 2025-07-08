@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\DailySalesReport;
 use App\Models\ProductCategory;
+use App\Models\ProductDocument;
 use App\Models\TrxEom;
 use App\Models\ProductCCTVSettings;
 use App\Models\Bank;
@@ -96,7 +97,7 @@ class Product extends Model
 
     public function product_documents()
     {
-        return $this->hasMany('App\ProductDocument');
+        return $this->hasMany(ProductDocument::class);
     }
 
     public function notices()

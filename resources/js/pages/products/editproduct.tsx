@@ -27,6 +27,13 @@ type Bank = {
   label: string;
 };
 
+type ProductDocument = {
+  id: number;
+  docname: string;
+  description: string;
+  path: string;
+};
+
 type CCTVSettings = {
   cctv_username: string;
   cctv_password?: string; // Password bisa jadi tidak dikirim balik dari server
@@ -38,13 +45,42 @@ type CCTVSettings = {
   attachment?: string;
 };
 
+type Product = {
+  id: number;
+  product_name: string;
+  product_category_id: number;
+  product_slug: string;
+  content: string;
+  term: string;
+  status: string;
+  expired_date?: Date;
+  invest_month: number;
+  max_slot: number;
+  platform_fee: number;
+  invest_amount: number;
+  ec_unit: number;
+  ec_rate: number;
+  ec_unit_remaining: number;
+  account_no: string;
+  on_behalf_of: string;
+  bank_id: number;
+  description: string;
+  price: number;
+  address: string;
+  embedmap: string;
+  image_1_url: string;
+  image_2_url: string;
+  image_3_url: string;
+  documents: ProductDocument[];
+};
+
 export default function EditProduct({
   product,
   categories,
   banks,
   cctv_settings,
 }: {
-  product: any;
+  product: Product;
   categories: Category[];
   banks: Bank[];
   cctv_settings: CCTVSettings | null;
@@ -88,6 +124,9 @@ export default function EditProduct({
     ios_app: cctv_settings?.cctv_ios_app ?? '',
     guidance: cctv_settings?.guidance ?? '',
     attachment: cctv_settings?.attachment ?? '',
+
+    new_document: null as File | null,
+    new_document_description: '',
   });
 
   const handleSubmit = (e: any) => {
@@ -514,6 +553,42 @@ export default function EditProduct({
                   {errors.attachment && <p className="text-red-500">{errors.attachment}</p>}
                 </div>
               </div>
+              <Label htmlFor="guidance">Supporting Document</Label>
+              {/* <div className="flex w-full flex-row gap-6">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="file1">Dokumen Tersimpan</Label>
+                  {product.documents.length > 0 ? (
+                    <ul className="mt-2 space-y-2">
+                      {product.documents.map((doc) => (
+                        <li key={doc.id} className="bg-muted/50 flex items-center justify-between rounded-lg border p-3">
+                          <div className="flex items-center gap-3">
+                            <Paperclip className="text-muted-foreground h-5 w-5" />
+                            <div>
+                              <p className="text-sm font-medium">{doc.docname}</p>
+                              <p className="text-muted-foreground text-xs">{doc.description}</p>
+                            </div>
+                          </div>
+                          <Button asChild variant="outline" size="sm">
+                            <a href={`/storage/${doc.path}`} target="_blank" rel="noopener noreferrer">
+                              <Download className="mr-2 h-4 w-4" />
+                              Lihat
+                            </a>
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted-foreground mt-2 text-sm">Belum ada dokumen yang diunggah.</p>
+                  )}
+                </div>
+              </div> */}
+              {/* <div className="flex w-full flex-row gap-6">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="file1">Upload New Document</Label>
+                  <FileDropzone file={data.new_document} onFileChange={(file) => setData('new_document', file)} />
+                  {errors.new_document && <p className="mt-1 text-sm text-red-600">{errors.new_document}</p>}
+                </div>
+              </div> */}
             </div>
           </div>
           <div className="flex flex-row justify-end gap-2 px-6">

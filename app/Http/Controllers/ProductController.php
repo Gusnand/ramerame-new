@@ -10,6 +10,7 @@ use App\Models\ProductCategory;
 use App\Models\Bank;
 use App\Models\ProductCCTVSettings;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ProductDocument;
 
 class ProductController extends Controller
 {
@@ -24,7 +25,7 @@ class ProductController extends Controller
     }
     public function edit($id)
     {
-        $product = Product::with(['category', 'product_cctvs'])->findOrFail($id);
+        $product = Product::with(['category', 'product_cctvs', 'product_documents'])->findOrFail($id);
         $categories = ProductCategory::all();
         $banks = Bank::where('is_deleted', false)
             ->orderBy('bank_name')
@@ -69,6 +70,9 @@ class ProductController extends Controller
             'cctv_ios_app' => 'nullable|string|max:255',
             'guidance' => 'nullable|string|max:255',
             'attachment' => 'nullable|string|max:255',
+
+            'new_document' => 'nullable|file|mimes:pdf|max:5120',
+            'new_document_description' => 'nullable|string',
         ]);
 
         $product->update($validated);
@@ -85,6 +89,21 @@ class ProductController extends Controller
                 'attachment' => $validated['attachment'],
             ]
         );
+
+        if ($request->hasFile('new_document')) {
+            $file = $request->file('new_document');
+            $originalName = $file->getClientOriginalName();
+
+            // Simpan file ke storage/app/public/product_documents
+            $path = $file->store('product_documents', 'public');
+
+            // Buat entri baru di database
+            $product->documents()->create([
+                'docname' => $originalName,
+                'path' => $path,
+                'description' => $request->input('new_document_description'),
+            ]);
+        }
 
         return redirect()->route('products/index')->with('success', 'Produk berhasil diperbarui.');
     }
