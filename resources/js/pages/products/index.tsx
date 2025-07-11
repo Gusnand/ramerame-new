@@ -1,11 +1,12 @@
 import { Link } from '@/components/ui/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { formatHarga } from '@/lib/helper';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
-import { CalendarClock, Pencil } from 'lucide-react';
+import { CalendarClock, FileImage, Pencil } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type Product = {
@@ -65,12 +66,38 @@ export default function Index() {
                 <TableCell className="text-left">{product.invest_month}</TableCell>
                 <TableCell className="text-left">{formatHarga(product.invest_amount)}</TableCell>
                 <TableCell className="w-full text-center">
-                  <Link variant="outline" size="icon" className="cursor-pointer" href={`products/editproduct/${product.id}`}>
-                    <Pencil />
-                  </Link>
-                  <Link variant="outline" size="icon" className="cursor-pointer" href={`products/sales-report/${product.id}`}>
-                    <CalendarClock />
-                  </Link>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Link variant="outline" size="icon" className="cursor-pointer" href={`products/editproduct/${product.id}`}>
+                        <Pencil />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Edit Product</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Link variant="outline" size="icon" className="cursor-pointer" href={`products/sales-report/${product.id}`}>
+                        <CalendarClock />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Sales Report</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Link variant="outline" size="icon" className="cursor-pointer" href={`products/certificate/${product.id}`}>
+                        <FileImage />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Certificate</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

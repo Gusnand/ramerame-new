@@ -126,4 +126,12 @@ class ProductController extends Controller
             'success' => false
         ], 400);
     }
+    public function showCertificate($id)
+    {
+        $product = Product::findOrFail($id);
+
+        return Inertia::render('products/certificate', [
+            'product' => $product,
+        ]);
+    }
 }

@@ -42,8 +42,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::get('/products/data', [ProductController::class, 'getData'])->name('products.data');
     Route::post('/products/editproduct/upload-image', [ProductController::class, 'store']);
+    // Route::get('/products/certificate/{id}', [ProductController::class, 'showCertificate'])->name('products.certificate');
     Route::get('/products/sales-report/{id}', [SalesController::class, 'index'])->name('products.sales-report');
 
+    // Route::get('/products/{id}/certificate', 'Super\CertificateController@editor')->name('certificate.editor');
+    Route::get('/products/{id}/certificate', 'CertificateController@editor')->name('certificate.editor');
+    Route::post('/products/certificate/save', 'CertificateController@save')->name('certificate.save');
+    Route::post('/products/certificate/update', 'CertificateController@update')->name('certificate.update');
 
     // ENDPOINT UNTUK .............................................................................
 

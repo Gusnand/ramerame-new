@@ -62,7 +62,7 @@ class Product extends Model
 
     public function product_images()
     {
-        return $this->hasMany('App\ProductImage');
+        return $this->hasMany(ProductImage::class);
     }
 
     public function product_expenses()
@@ -107,7 +107,7 @@ class Product extends Model
 
     public function product_insurances()
     {
-        return $this->hasMany('App\ProductInsurance', 'id', 'product_id');
+        return $this->hasMany(ProductInsurance::class, 'id', 'product_id');
     }
 
     // public function bank()
@@ -122,6 +122,6 @@ class Product extends Model
 
     public function insurances()
     {
-        return $this->belongsTo('App\Insurance', 'insurance_id');
+        return $this->belongsTo(Insurance::class, 'insurance_id');
     }
 }

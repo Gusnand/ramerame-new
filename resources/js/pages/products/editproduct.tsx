@@ -1,14 +1,16 @@
 import { DatePicker } from '@/components/date-picker';
+import { Dropzone, DropZoneArea, DropzoneMessage, DropzoneTrigger, useDropzone } from '@/components/dropzone';
 import ImageDropzone from '@/components/dropzone_backup';
-
 import HeadingSmall from '@/components/heading-small';
 import RichTextEditor from '@/components/richtext-editor';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
@@ -138,6 +140,27 @@ export default function EditProduct({
     router.get('/products');
   };
 
+  const dropzone = useDropzone({
+    onDropFile: async (file: File) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return {
+        status: 'success',
+        result: URL.createObjectURL(file),
+      };
+    },
+    validation: {
+      accept: {
+        'image/*': ['.png', '.jpg', '.jpeg'],
+      },
+      maxSize: 10 * 1024 * 1024,
+      maxFiles: 1,
+    },
+    shiftOnMaxFiles: true,
+  });
+
+  const avatarSrc = dropzone.fileStatuses[0]?.result;
+  const isPending = dropzone.fileStatuses[0]?.status === 'pending';
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Edit Produk" />
@@ -201,11 +224,29 @@ export default function EditProduct({
                 {errors.term && <p className="text-red-500">{errors.term}</p>}
               </div>
 
-              <div className="grid w-full items-center gap-2">
+              {/* <div className="grid w-full items-center gap-2">
                 <Label htmlFor="termInput">Upload your terms & conditions</Label>
                 <Input id="term" type="file" />
                 {errors.term && <p className="text-sm text-red-500">{errors.term}</p>}
-              </div>
+              </div> */}
+
+              <Dropzone {...dropzone}>
+                <div className="flex justify-between">
+                  <DropzoneMessage />
+                </div>
+                <DropZoneArea>
+                  <DropzoneTrigger className="flex gap-8 bg-transparent text-sm">
+                    <Avatar className={cn(isPending && 'animate-pulse')}>
+                      <AvatarImage className="object-cover" src={avatarSrc} />
+                      <AvatarFallback>JG</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col gap-1 font-semibold">
+                      <p>Upload a new avatar</p>
+                      <p className="text-muted-foreground text-xs">Please select an image smaller than 10MB</p>
+                    </div>
+                  </DropzoneTrigger>
+                </DropZoneArea>
+              </Dropzone>
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="status">Status</Label>
