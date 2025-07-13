@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\CertificateController;
 
 // Route::get('/', function () {
 //     return Inertia::render('welcome');
@@ -46,9 +47,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/products/sales-report/{id}', [SalesController::class, 'index'])->name('products.sales-report');
 
     // Route::get('/products/{id}/certificate', 'Super\CertificateController@editor')->name('certificate.editor');
-    Route::get('/products/{id}/certificate', 'CertificateController@editor')->name('certificate.editor');
-    Route::post('/products/certificate/save', 'CertificateController@save')->name('certificate.save');
-    Route::post('/products/certificate/update', 'CertificateController@update')->name('certificate.update');
+    // Route::get('/products/certificate/{id}', [CertificateController::class, 'editor'])->name('certificate.editor');
+    // Route::post('/products/certificate/save', 'CertificateController@save')->name('certificate.save');
+    // Route::post('/products/certificate/update', 'CertificateController@update')->name('certificate.update');
+
+    Route::get('/products/certificate/{id}', [CertificateController::class, 'edit'])
+        ->name('certificates.edit');
+    Route::post('/products/certificate/{id}/generate-certificates', [CertificateController::class, 'generateForProduct'])
+        ->name('certificates.generate');
+    Route::get('/products/certificate/{id}/download', [CertificateController::class, 'download'])
+        ->name('certificates.download');
 
     // ENDPOINT UNTUK .............................................................................
 
