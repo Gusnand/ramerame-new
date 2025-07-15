@@ -19,9 +19,17 @@ class ProductController extends Controller
         return Inertia::render('dashboard');
     }
 
-    public function getData(ProductDataTable $dataTable)
+    public function getData(Request $request)
     {
-        return $dataTable->ajax();
+        $products = Product::query()
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where('product_name', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return response()->json($products);
     }
     public function edit($id)
     {

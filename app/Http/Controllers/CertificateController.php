@@ -13,28 +13,32 @@ use Inertia\Inertia;
 
 class CertificateController extends Controller
 {
-  public function edit($productId)
+  public function edit($productId, Request $request)
   {
     $product = Product::findOrFail($productId);
 
     // Mengambil atau membuat sertifikat untuk produk ini.
-    // Kita juga memuat relasi 'details' (certifiers) secara eager loading.
-    $certificate = Certificate::with('details')->firstOrCreate(
+    $certificate = Certificate::firstOrCreate(
       ['product_id' => $product->id],
       [
-        // Memberikan nilai default saat sertifikat baru dibuat
         'cert_prefix' => 'RAMA-' . $product->id,
         'product_name' => $product->product_name,
         'product_duration' => $product->invest_month,
         'product_location' => $product->address,
-        'cert_location' => 'Jakarta', // Contoh default, bisa diubah
-        'cert_date_string' => now()->translatedFormat('d F Y'), // Contoh default
+        'cert_location' => 'Jakarta',
+        'cert_date_string' => now()->translatedFormat('d F Y'),
       ]
     );
+
+    $perPage = 10;
+    $page = $request->input('page', 1);
+    // Paginate certifier details (pemilik sertifikat)
+    $certifiers = $certificate->details()->paginate($perPage, ['*'], 'page', $page);
 
     return Inertia::render('products/certificate', [
       'certificate' => $certificate,
       'product' => $product,
+      'certifiers' => $certifiers,
     ]);
   }
   public function generateForProduct(Product $product)

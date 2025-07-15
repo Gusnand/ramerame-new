@@ -1,13 +1,22 @@
+import { Input } from '@/components/ui/input';
 import { Link } from '@/components/ui/link';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { formatHarga } from '@/lib/helper';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import axios from 'axios';
 import { CalendarClock, FileImage, Pencil } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type Product = {
   id: number;
@@ -16,6 +25,18 @@ type Product = {
   expired_date: string;
   invest_month: number;
   invest_amount: number;
+};
+
+type PaginationLink = {
+  url: string | null;
+  label: string;
+  active: boolean;
+};
+
+type PaginationData = {
+  links: PaginationLink[];
+  current_page: number;
+  last_page: number;
 };
 
 export default function Index() {
@@ -27,19 +48,46 @@ export default function Index() {
   ];
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [pagination, setPagination] = useState<PaginationData | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    axios.get('/products/data').then((response) => {
-      setProducts(response.data.data);
-    });
-  }, []);
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to first page on new search
+    }, 500);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`/products/data?page=${currentPage}&search=${debouncedSearchTerm}`);
+        const data = await response.json();
+        setProducts(data.data);
+        setPagination(data);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, [debouncedSearchTerm, currentPage]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Product Inquiries" />
 
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-        <h1>Daftar Produk</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Daftar Produk</h1>
+          <Input placeholder="Cari produk..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full max-w-sm" />
+        </div>
         <Table>
           <TableHeader>
             <TableRow className="h-20 w-full">
@@ -103,6 +151,48 @@ export default function Index() {
             ))}
           </TableBody>
         </Table>
+        {pagination && pagination.last_page > 1 && (
+          <Pagination>
+            <PaginationContent>
+              {pagination.links.map((link, index) => {
+                const pageNumber = new URLSearchParams(link.url?.split('?')[1]).get('page');
+                return (
+                  <React.Fragment key={index}>
+                    {link.label.includes('Previous') ? (
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => link.url && setCurrentPage(pagination.current_page - 1)}
+                          className={!link.url ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    ) : link.label.includes('Next') ? (
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => link.url && setCurrentPage(pagination.current_page + 1)}
+                          className={!link.url ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    ) : link.label === '...' ? (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem>
+                        <PaginationLink
+                          onClick={() => pageNumber && setCurrentPage(Number(pageNumber))}
+                          isActive={link.active}
+                          className="cursor-pointer"
+                        >
+                          {link.label}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </AppLayout>
   );

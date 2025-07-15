@@ -2,14 +2,17 @@ import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Link } from '@/components/ui/link';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
+import { Download } from 'lucide-react';
 import React from 'react';
 
-// Mendefinisikan tipe data untuk kejelasan dan keamanan kode
 type Certifier = {
   id: number;
   name: string;
@@ -41,11 +44,19 @@ type Product = {
   product_name: string;
 };
 
-export default function Certificate({ certificate, product }: { certificate: CertificateData; product: Product }) {
+export default function Certificate({
+  certificate,
+  product,
+  certifiers = { data: [], current_page: 1, last_page: 1, per_page: 10 },
+}: {
+  certificate: CertificateData;
+  product: Product;
+  certifiers?: any;
+}) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'Certificate',
-      href: route('certificates.edit', product.id), // Menggunakan product.id sesuai route
+      href: route('certificates.edit', product.id),
     },
   ];
   const { data, setData, post, processing, errors } = useForm({
@@ -226,6 +237,83 @@ export default function Certificate({ certificate, product }: { certificate: Cer
                 {errors.project_owner_name && <p className="text-red-500">{errors.project_owner_name}</p>}
               </div>
             </div>
+          </div>
+          <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
+            <HeadingSmall title="Certifier's List" description="" />
+            <Table>
+              <TableHeader>
+                <TableRow className="h-20 w-full">
+                  <TableHead className="text-md w-[50px]">No.</TableHead>
+                  <TableHead className="text-md w-[300px]">Name</TableHead>
+                  <TableHead className="text-md w-[250px]">Email</TableHead>
+                  <TableHead className="text-md w-[200px]">
+                    Certificate <br /> Number
+                  </TableHead>
+                  <TableHead className="text-md w-[80px]">
+                    Total <br /> Slot
+                  </TableHead>
+                  <TableHead className="text-md w-[150px]">Value</TableHead>
+                  <TableHead className="text-md w-full text-center"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {certifiers && certifiers.data && certifiers.data.length > 0 ? (
+                  certifiers.data.map((certifier: Certifier, index: number) => (
+                    <TableRow key={certifier.id}>
+                      <TableCell className="">{(certifiers.current_page - 1) * certifiers.per_page + index + 1}</TableCell>
+                      <TableCell className="">{certifier.name}</TableCell>
+                      <TableCell className="text-left">{certifier.email}</TableCell>
+                      <TableCell className="">{certifier.certificate_no}</TableCell>
+                      <TableCell className="text-left">{certifier.total_slot}</TableCell>
+                      <TableCell className="text-left">
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Link variant="outline" size="icon" className="cursor-pointer" href={route('certificates.download', certifier.id)}>
+                              <Download />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Download Certificate</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center">
+                      No data available
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            {/* Pagination Controls */}
+            {certifiers && certifiers.last_page > 1 && (
+              <div className="mt-4 flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={certifiers.current_page === 1}
+                  onClick={() => router.get(route('certificates.edit', product.id), { page: certifiers.current_page - 1 }, { preserveScroll: true })}
+                >
+                  Previous
+                </Button>
+                <span className="px-2 py-1">
+                  Page {certifiers.current_page} of {certifiers.last_page}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={certifiers.current_page === certifiers.last_page}
+                  onClick={() => router.get(route('certificates.edit', product.id), { page: certifiers.current_page + 1 }, { preserveScroll: true })}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-row justify-end gap-2 px-6">
