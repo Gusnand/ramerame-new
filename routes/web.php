@@ -55,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('certificates.edit');
     Route::post('/products/certificate/{id}/generate-certificates', [CertificateController::class, 'generateForProduct'])
         ->name('certificates.generate');
-    Route::get('/products/certificate/{id}/download', [CertificateController::class, 'download'])
+    Route::get('/products/certificate/download/{certifier}', [CertificateController::class, 'download'])
         ->name('certificates.download');
 
     // ENDPOINT UNTUK .............................................................................
