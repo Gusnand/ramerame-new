@@ -80,6 +80,7 @@ class CertificateController extends Controller
 
         $counter++;
       }
+
     }
 
     return redirect()->back()->with('success', 'Data sertifikat berhasil dibuat.');
@@ -98,8 +99,22 @@ class CertificateController extends Controller
     $nameFont = storage_path('app/templates/fonts/pacifico/Pacifico.ttf');
     $certFontLight = storage_path('app/templates/fonts/montserrat/Montserrat-Light.ttf');
 
-    if (!file_exists($templatePath)) {
-      abort(500, 'Template sertifikat tidak ditemukan.');
+    // Cek keberadaan semua file yang diperlukan
+    $requiredFiles = [
+      $templatePath => 'Template sertifikat',
+      $titleFont => 'Font untuk judul',
+      $certFont => 'Font untuk sertifikat',
+      $nameFont => 'Font untuk nama',
+      $certFontLight => 'Font untuk teks ringan'
+    ];
+
+    foreach ($requiredFiles as $path => $description) {
+      if (!file_exists($path)) {
+        return response()->json([
+          'error' => true,
+          'message' => "$description tidak ditemukan di: $path"
+        ], 500);
+      }
     }
 
     $im = imagecreatefrompng($templatePath);
@@ -109,38 +124,70 @@ class CertificateController extends Controller
     $goldColor = imagecolorallocatealpha($im, 188, 145, 59, 1);
     $blueColor = imagecolorallocate($im, 21, 66, 115);
 
-    // Definisi Teks (sama seperti di controller lama)
+    // Definisi Teks
     $ownerText = $certifier->name;
-    $cellContent03 = 'Rp. ' . number_format(($certifier->total_slot * $certifier->slot_price), 2, ',', '.');
+    $cellContent03 = 'Rp. ' . number_format(($certifier->total_slot * $certifier->slot_price), 0, ',', '.');
 
-    // --- Mempertahankan semua pengaturan teks dari controller lama ---
-    // Saya mengaktifkan semua baris imagettftext yang sebelumnya dikomentari
+    // Judul Sertifikat
     imagettftext($im, 65, 0, 825, 463, $blueColor, $titleFont, 'SERTIFIKAT KEPEMILIKAN SLOT');
-    imagettftext($im, 35, 0, 1300, 620, $blueColor, $certFont, 'No : ' . $certifier->certificate_no);
-    imagettftext($im, 35, 0, 1380, 820, $blackColor, $certFont, 'Atas Nama Pemilik');
 
+    // Nomor Sertifikat
+    imagettftext($im, 35, 0, 825, 620, $blueColor, $certFont, 'No : ' . $certifier->certificate_no);
+
+    // Teks "Atas Nama Pemilik"
+    imagettftext($im, 35, 0, 825, 820, $blackColor, $certFont, 'Atas Nama Pemilik');
+
+    // Nama Pemilik (dengan centering yang diperbaiki)
     $bbox = imagettfbbox(70, 0, $nameFont, $ownerText);
-    $x = $bbox[0] + (imagesx($im) / 2) - ($bbox[4] / 2);
+    $textWidth = $bbox[2] - $bbox[0];
+    $imageWidth = imagesx($im);
+    $x = ($imageWidth - $textWidth) / 2;
     imagettftext($im, 70, 0, $x, 930, $goldColor, $nameFont, $ownerText);
 
-    $bbox = imagettfbbox(35, 0, $certFontLight, $certifier->address);
-    $x = $bbox[0] + (imagesx($im) / 2) - ($bbox[4] / 2);
-    imagettftext($im, 35, 0, $x, 1100, $blackColor, $certFontLight, $certifier->address);
+    // Alamat Pemilik (dengan centering)
+    $addressText = $certifier->address;
+    $bbox = imagettfbbox(35, 0, $certFontLight, $addressText);
+    $textWidth = $bbox[2] - $bbox[0];
+    $x = ($imageWidth - $textWidth) / 2;
+    imagettftext($im, 35, 0, $x, 1100, $blackColor, $certFontLight, $addressText);
 
+    // Teks Deskripsi
     imagettftext($im, 35, 0, 700, 1300, $blackColor, $certFont, 'Sebagaimana tercatat dalam Daftar pemegang SLOT untuk Proyek / usaha');
 
-    // ... (dan seterusnya, semua baris imagettftext lainnya dari kode lama Anda)
-    // ... (pastikan semua variabel seperti $certificate->product_name dll. tersedia)
+    // Label-label
     imagettftext($im, 35, 0, 300, 1500, $blackColor, $certFontLight, 'Nama Proyek/Usaha');
     imagettftext($im, 35, 0, 1200, 1500, $blackColor, $certFontLight, 'Jumlah Slot');
     imagettftext($im, 35, 0, 1800, 1500, $blackColor, $certFontLight, 'Senilai');
     imagettftext($im, 35, 0, 2500, 1500, $blackColor, $certFontLight, 'Durasi Kontrak');
 
+    // Nilai-nilai
     imagettftext($im, 35, 0, 300, 1650, $blueColor, $certFont, $certificate->product_name);
     imagettftext($im, 35, 0, 1200, 1650, $blueColor, $certFont, $certifier->total_slot . ' SLOT');
     imagettftext($im, 35, 0, 1800, 1650, $blueColor, $certFont, $cellContent03);
     imagettftext($im, 35, 0, 2500, 1650, $blueColor, $certFont, $certificate->product_duration . ' BULAN');
-    // --- Akhir dari pengaturan teks ---
+
+    // Alamat Proyek
+    $projectAddress = $certificate->product_location;
+    imagettftext($im, 30, 0, 300, 1750, $blackColor, $certFontLight, $projectAddress);
+
+    // Keterangan "Sejak Project Berjalan"
+    imagettftext($im, 30, 0, 2500, 1750, $blackColor, $certFontLight, 'Sejak Project Berjalan');
+
+    // Lokasi dan Tanggal
+    $dateLocation = $certificate->cert_location . ', ' . $certificate->cert_date_string;
+    $bbox = imagettfbbox(35, 0, $certFont, $dateLocation);
+    $textWidth = $bbox[2] - $bbox[0];
+    $x = $imageWidth - $textWidth - 300; // 300 adalah margin kanan
+    imagettftext($im, 35, 0, $x, 1900, $blackColor, $certFont, $dateLocation);
+
+    // Penandatangan
+    imagettftext($im, 30, 0, 300, 2000, $blackColor, $certFontLight, 'Penyelenggara');
+    imagettftext($im, 30, 0, 300, 2050, $blackColor, $certFontLight, 'KETUA PENGURUS KOPERASI');
+    imagettftext($im, 30, 0, 300, 2200, $blueColor, $certFont, $certificate->admin_owner);
+
+    imagettftext($im, 30, 0, $x, 2000, $blackColor, $certFontLight, 'Pemilik Project');
+    imagettftext($im, 30, 0, $x, 2050, $blackColor, $certFontLight, 'KETUA KELOMPOK USAHA ' . strtoupper($certificate->product_name));
+    imagettftext($im, 30, 0, $x, 2200, $blueColor, $certFont, $certificate->project_owner_name);
 
     // Menangkap output gambar ke dalam variabel
     ob_start();

@@ -1,3 +1,4 @@
+import '@schedule-x/theme-shadcn/dist/index.css';
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';

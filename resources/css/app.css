@@ -211,3 +211,8 @@
   color: #999;
   pointer-events: none;
 }
+
+.sx-react-calendar-wrapper {
+  height: 700px;
+  width: 100%;
+}
