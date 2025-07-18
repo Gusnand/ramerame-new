@@ -131,7 +131,7 @@ class CertificateController extends Controller
     $ownerLabelText = 'Atas Nama Pemilik';
     $ownerText = $certifier->name;
     $ownerAddressText = $certifier->address;
-    $claimLabelText = 'Sebagaimana tercatat dalam Daftar pemegang SLOT untuk Proyek / usaha';
+    $claimLabelText = 'Sebagaimana Tercatat dalam Daftar Pemegang SLOT untuk Proyek/Usaha';
 
     $cellLabel01 = 'Nama Proyek/Usaha';
     $cellLabel02 = 'Jumlah Slot';
@@ -173,16 +173,16 @@ class CertificateController extends Controller
 
     // Nama Pemilik (dengan centering yang diperbaiki)
     $bbox = imagettfbbox(70, 0, $nameFont, $ownerText);
-    $x = $bbox[0] + (imagesx($im) / 2) - ($bbox[4] / 2) - 25;
+    $x = $bbox[0] + (imagesx($im) / 2) - ($bbox[4] / 2) - 75; // Menambah offset ke kiri (dari -25 menjadi -75)
     imagettftext($im, 70, 0, $x, 930, $goldColor, $nameFont, $ownerText);
 
     // Alamat Pemilik
     $bbox = imagettfbbox(35, 0, $certFontLight, $ownerAddressText);
-    $x = $bbox[0] + (imagesx($im) / 2) - ($bbox[4] / 2);
+    $x = $bbox[0] + (imagesx($im) / 2) - ($bbox[4] / 2) - 85; // Menambah offset -50 untuk geser ke kiri
     imagettftext($im, 35, 0, $x, 1100, $blackColor, $certFontLight, $ownerAddressText);
 
     // Teks Deskripsi
-    imagettftext($im, 35, 0, 700, 1300, $blackColor, $certFont, $claimLabelText);
+    imagettftext($im, 35, 0, 735, 1300, $blackColor, $certFont, $claimLabelText);
 
     // Rectangle abu-abu untuk header tabel
     imagefilledrectangle($im, 100, 1400, 3300, 1550, $greyColor);
@@ -219,6 +219,23 @@ class CertificateController extends Controller
     imagettftext($im, 25, 0, 2200, 2050, $blackColor, $certFontLight, $projectCompany);
     imagettftext($im, 30, 0, 2200, 2310, $blackColor, $certFontLight, $projectOwnerTitle);
 
+    // Sebelum menangkap output gambar, sisipkan data menggunakan LSB
+    $stegoData = [
+      'name' => $certifier->name,
+      'email' => $certifier->email,
+      'address' => $certifier->address,
+      'certificate_no' => $certifier->certificate_no,
+      'generated_at' => now()->toIso8601String(),
+      'issuer' => 'RAMERAME.CO.ID'
+    ];
+
+    // Konversi data ke JSON
+    $stegoJson = json_encode($stegoData);
+
+    // Sisipkan data menggunakan LSB
+    $lsb = new \App\Helpers\LSBSteganography();
+    $im = $lsb->embedData($im, $stegoJson);
+
     // Menangkap output gambar ke dalam variabel
     ob_start();
     imagepng($im);
@@ -232,6 +249,38 @@ class CertificateController extends Controller
     return Response::make($image_data, 200, [
       'Content-Type' => 'image/png',
       'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+    ]);
+  }
+
+  /**
+   * Memvalidasi keaslian sertifikat
+   */
+  public function validateCertificate(Request $request)
+  {
+    if (!$request->hasFile('certificate')) {
+      return response()->json([
+        'error' => true,
+        'message' => 'File sertifikat tidak ditemukan'
+      ], 400);
+    }
+
+    $file = $request->file('certificate');
+    $lsb = new \App\Helpers\LSBSteganography();
+
+    // Validasi sertifikat
+    $extractedData = $lsb->validateCertificate($file->getPathname());
+
+    if (!$extractedData) {
+      return response()->json([
+        'error' => true,
+        'message' => 'Sertifikat tidak valid atau telah dimodifikasi'
+      ], 400);
+    }
+
+    return response()->json([
+      'error' => false,
+      'message' => 'Sertifikat valid',
+      'data' => $extractedData
     ]);
   }
 

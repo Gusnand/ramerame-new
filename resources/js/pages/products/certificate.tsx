@@ -1,5 +1,7 @@
 import HeadingSmall from '@/components/heading-small';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from '@/components/ui/link';
@@ -15,11 +17,12 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
+import { formatHarga } from '@/lib/helper';
 import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
-import { CalendarSync, Download } from 'lucide-react';
+import { CheckCircle2, Download, Upload, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
 
 type Certifier = {
@@ -28,6 +31,7 @@ type Certifier = {
   email: string;
   certificate_no: string;
   total_slot: number;
+  slot_price: number;
 };
 
 type CertificateData = {
@@ -88,6 +92,50 @@ export default function Certificate({
   // Store original data for cancel
   const [originalData] = useState({ ...certificate });
 
+  // State untuk validasi sertifikat
+  const [validationResult, setValidationResult] = useState<{
+    error: boolean;
+    message: string;
+    data?: {
+      name: string;
+      email: string;
+      address: string;
+      certificate_no: string;
+      generated_at: string;
+      issuer: string;
+    };
+  } | null>(null);
+
+  const [isValidating, setIsValidating] = useState(false);
+
+  // Handler untuk validasi sertifikat
+  const handleValidateCertificate = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsValidating(true);
+    setValidationResult(null);
+
+    const formData = new FormData();
+    formData.append('certificate', file);
+
+    try {
+      const response = await fetch(route('certificates.validate'), {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      setValidationResult(result);
+    } catch (error) {
+      setValidationResult({
+        error: true,
+        message: 'Terjadi kesalahan saat memvalidasi sertifikat',
+      });
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     post(route('certificates.update', certificate.id), {
@@ -114,19 +162,6 @@ export default function Certificate({
     setEditMode(false);
   };
 
-  // Fungsi untuk memicu proses generate/sync data pemilik sertifikat
-  const handleGenerate = () => {
-    if (confirm('Anda yakin ingin generate/sinkronisasi data pemilik sertifikat?')) {
-      router.post(
-        route('certificates.generate', product.id),
-        {},
-        {
-          preserveScroll: true,
-        },
-      );
-    }
-  };
-
   const returnPage = () => {
     router.get('/products');
   };
@@ -136,11 +171,11 @@ export default function Certificate({
       <Head title={`Certificate for ${product.product_name}`} />
 
       <div className="flex h-full flex-col gap-6 rounded-xl p-4">
+        {/* Certificate Settings Form */}
         <form onSubmit={handleSubmit} className="ml-4 flex flex-col gap-6">
           <div className="flex-1">
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Certificate Settings" description="Update the general information for this certificate." />
-
               {/* All input fields: disabled if not editMode */}
               <div className="flex w-full flex-row items-center gap-2">
                 <Label className="w-1/3" htmlFor="name">
@@ -297,6 +332,7 @@ export default function Certificate({
           </div>
         </form>
 
+        {/* Certifier's List Section */}
         <div className="flex h-full flex-col gap-6 rounded-xl p-4">
           <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
             <HeadingSmall title="Certifier's List" description="" />
@@ -325,23 +361,18 @@ export default function Certificate({
                       <TableCell className="text-left">{certifier.email}</TableCell>
                       <TableCell className="">{certifier.certificate_no}</TableCell>
                       <TableCell className="text-left">{certifier.total_slot}</TableCell>
+                      <TableCell className="text-left">{formatHarga(certifier.slot_price * certifier.total_slot)}</TableCell>
                       <TableCell className="text-left">
-                        <Tooltip>
+                        {/* <Tooltip>
                           <TooltipTrigger>
-                            <a
-                              href={route('certificates.download', certifier.id)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center rounded border p-2 hover:bg-gray-100"
-                              download
-                            >
+                            <Link variant="outline" size="icon" className="cursor-pointer" href={route('certificates.generate', certifier.id)}>
                               <CalendarSync />
-                            </a>
+                            </Link>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Generate Certificate</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </Tooltip> */}
                         <Tooltip>
                           <TooltipTrigger>
                             <Link variant="outline" size="icon" className="cursor-pointer" href={route('certificates.download', certifier.id)}>
@@ -434,6 +465,69 @@ export default function Certificate({
                 </PaginationContent>
               </Pagination>
             )}
+          </div>
+        </div>
+
+        {/* Certificate Validation Section */}
+        <div className="flex h-full flex-col gap-6 rounded-xl p-4">
+          <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
+            <HeadingSmall title="Validate Certificate" description="Upload a certificate to verify its authenticity." />
+
+            <div className="flex flex-col gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Certificate Validation</CardTitle>
+                  <CardDescription>Upload your certificate file to verify if it's genuine and hasn't been modified.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-4">
+                      <Input type="file" accept=".png" onChange={handleValidateCertificate} disabled={isValidating} className="flex-1" />
+                    </div>
+
+                    {isValidating && (
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <Upload className="h-4 w-4 animate-spin" />
+                        <span>Validating certificate...</span>
+                      </div>
+                    )}
+
+                    {validationResult && (
+                      <Alert variant={validationResult.error ? 'destructive' : 'default'}>
+                        {validationResult.error ? (
+                          <>
+                            <XCircle className="h-4 w-4" />
+                            <AlertTitle>Invalid Certificate</AlertTitle>
+                            <AlertDescription>{validationResult.message}</AlertDescription>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="h-4 w-4" />
+                            <AlertTitle>Valid Certificate</AlertTitle>
+                            <AlertDescription>
+                              <div className="mt-2">
+                                <p>
+                                  <strong>Name:</strong> {validationResult.data?.name}
+                                </p>
+                                <p>
+                                  <strong>Certificate No:</strong> {validationResult.data?.certificate_no}
+                                </p>
+                                <p>
+                                  <strong>Generated At:</strong> {new Date(validationResult.data?.generated_at || '').toLocaleString()}
+                                </p>
+                                <p>
+                                  <strong>Issuer:</strong> {validationResult.data?.issuer}
+                                </p>
+                              </div>
+                            </AlertDescription>
+                          </>
+                        )}
+                      </Alert>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
