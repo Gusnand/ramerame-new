@@ -57,6 +57,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('certificates.generate');
     Route::get('/products/certificate/download/{certifier}', [CertificateController::class, 'download'])
         ->name('certificates.download');
+    Route::post('/certificates/validate', [CertificateController::class, 'validateCertificate'])
+        ->middleware('web')
+        ->name('certificates.validate');
+
 
     // ENDPOINT UNTUK .............................................................................
 
@@ -64,7 +68,6 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-Route::post('/certificates/validate', [CertificateController::class, 'validateCertificate'])->name('certificates.validate');
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

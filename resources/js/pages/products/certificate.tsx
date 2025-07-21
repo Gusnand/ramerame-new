@@ -22,7 +22,7 @@ import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
-import { CheckCircle2, Download, Upload, XCircle } from 'lucide-react';
+import { CheckCircle2, Download, LoaderCircle, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
 
 type Certifier = {
@@ -113,27 +113,58 @@ export default function Certificate({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Reset file input value to allow resubmission of the same file
+    e.target.value = '';
+
     setIsValidating(true);
     setValidationResult(null);
 
     const formData = new FormData();
     formData.append('certificate', file);
 
+    // Create AbortController for request cancellation
+    const controller = new AbortController();
+    const { signal } = controller;
+
     try {
       const response = await fetch(route('certificates.validate'), {
         method: 'POST',
+        headers: {
+          'X-XSRF-TOKEN': decodeURIComponent(
+            document.cookie
+              .split('; ')
+              .find((row) => row.startsWith('XSRF-TOKEN='))
+              ?.split('=')[1] || '',
+          ),
+        },
+        credentials: 'include',
         body: formData,
+        signal, // Add signal for request cancellation
       });
+
+      // Check if response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
       setValidationResult(result);
-    } catch (error) {
-      setValidationResult({
-        error: true,
-        message: 'Terjadi kesalahan saat memvalidasi sertifikat',
-      });
+    } catch (error: unknown) {
+      // Only set error if it's not an abort error
+      if (error instanceof Error && error.name !== 'AbortError') {
+        setValidationResult({
+          error: true,
+          message: 'Terjadi kesalahan saat memvalidasi sertifikat',
+        });
+      }
     } finally {
       setIsValidating(false);
     }
+
+    // Cleanup function
+    return () => {
+      controller.abort();
+    };
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -487,8 +518,8 @@ export default function Certificate({
 
                     {isValidating && (
                       <div className="text-muted-foreground flex items-center gap-2">
-                        <Upload className="h-4 w-4 animate-spin" />
-                        <span>Validating certificate...</span>
+                        <LoaderCircle className="h-4 w-4 animate-spin" />
+                        <span className="text-sm">Validating certificate...</span>
                       </div>
                     )}
 

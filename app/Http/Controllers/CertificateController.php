@@ -9,6 +9,7 @@ use App\Models\TrxProductPurchase;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CertificateController extends Controller
@@ -257,31 +258,48 @@ class CertificateController extends Controller
    */
   public function validateCertificate(Request $request)
   {
-    if (!$request->hasFile('certificate')) {
+    try {
+      if (!$request->hasFile('certificate')) {
+        return response()->json([
+          'error' => true,
+          'message' => 'File sertifikat tidak ditemukan'
+        ], 400);
+      }
+
+      $file = $request->file('certificate');
+
+      // Validasi tipe file
+      if ($file->getClientMimeType() !== 'image/png') {
+        return response()->json([
+          'error' => true,
+          'message' => 'File harus berupa gambar PNG'
+        ], 400);
+      }
+
+      $lsb = new \App\Helpers\LSBSteganography();
+
+      // Validasi sertifikat
+      $extractedData = $lsb->validateCertificate($file->getPathname());
+
+      if (!$extractedData) {
+        return response()->json([
+          'error' => true,
+          'message' => 'Sertifikat tidak valid atau telah dimodifikasi'
+        ], 400);
+      }
+
+      return response()->json([
+        'error' => false,
+        'message' => 'Sertifikat valid',
+        'data' => $extractedData
+      ]);
+    } catch (\Exception $e) {
+      Log::error('Certificate validation error: ' . $e->getMessage());
       return response()->json([
         'error' => true,
-        'message' => 'File sertifikat tidak ditemukan'
-      ], 400);
+        'message' => 'Terjadi kesalahan saat memvalidasi sertifikat: ' . $e->getMessage()
+      ], 500);
     }
-
-    $file = $request->file('certificate');
-    $lsb = new \App\Helpers\LSBSteganography();
-
-    // Validasi sertifikat
-    $extractedData = $lsb->validateCertificate($file->getPathname());
-
-    if (!$extractedData) {
-      return response()->json([
-        'error' => true,
-        'message' => 'Sertifikat tidak valid atau telah dimodifikasi'
-      ], 400);
-    }
-
-    return response()->json([
-      'error' => false,
-      'message' => 'Sertifikat valid',
-      'data' => $extractedData
-    ]);
   }
 
   private function getOwners(Product $product)
