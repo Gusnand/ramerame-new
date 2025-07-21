@@ -126,10 +126,21 @@ export default function Certificate({
     const controller = new AbortController();
     const { signal } = controller;
 
+    // Set timeout to cancel request after 30 seconds
+    const timeout = setTimeout(() => {
+      controller.abort();
+      setValidationResult({
+        error: true,
+        message: 'Waktu validasi habis. Silakan coba lagi.',
+      });
+      setIsValidating(false);
+    }, 30000);
+
     try {
       const response = await fetch(route('certificates.validate'), {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           'X-XSRF-TOKEN': decodeURIComponent(
             document.cookie
               .split('; ')
@@ -139,30 +150,35 @@ export default function Certificate({
         },
         credentials: 'include',
         body: formData,
-        signal, // Add signal for request cancellation
+        signal,
       });
+
+      clearTimeout(timeout);
 
       // Check if response is ok
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
       setValidationResult(result);
     } catch (error: unknown) {
+      clearTimeout(timeout);
+
       // Only set error if it's not an abort error
       if (error instanceof Error && error.name !== 'AbortError') {
         setValidationResult({
           error: true,
-          message: 'Terjadi kesalahan saat memvalidasi sertifikat',
+          message: error.message || 'Terjadi kesalahan saat memvalidasi sertifikat',
         });
       }
     } finally {
       setIsValidating(false);
     }
 
-    // Cleanup function
     return () => {
+      clearTimeout(timeout);
       controller.abort();
     };
   };

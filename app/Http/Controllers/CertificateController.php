@@ -259,7 +259,10 @@ class CertificateController extends Controller
   public function validateCertificate(Request $request)
   {
     try {
+      Log::info('Starting certificate validation');
+
       if (!$request->hasFile('certificate')) {
+        Log::warning('No certificate file found in request');
         return response()->json([
           'error' => true,
           'message' => 'File sertifikat tidak ditemukan'
@@ -267,34 +270,83 @@ class CertificateController extends Controller
       }
 
       $file = $request->file('certificate');
+      Log::info('Certificate file received', [
+        'mime_type' => $file->getClientMimeType(),
+        'size' => $file->getSize(),
+        'original_name' => $file->getClientOriginalName()
+      ]);
 
       // Validasi tipe file
-      if ($file->getClientMimeType() !== 'image/png') {
+      $mimeType = $file->getMimeType();
+      if ($mimeType !== 'image/png') {
+        Log::warning('Invalid file type', ['mime_type' => $mimeType]);
         return response()->json([
           'error' => true,
           'message' => 'File harus berupa gambar PNG'
         ], 400);
       }
 
+      // Validasi ukuran file
+      $maxSize = 10 * 1024 * 1024; // 10MB
+      if ($file->getSize() > $maxSize) {
+        Log::warning('File too large', ['size' => $file->getSize()]);
+        return response()->json([
+          'error' => true,
+          'message' => 'Ukuran file terlalu besar (maksimal 10MB)'
+        ], 400);
+      }
+
+      // Cek apakah file bisa dibaca
+      if (!is_readable($file->getPathname())) {
+        Log::error('File not readable', ['path' => $file->getPathname()]);
+        return response()->json([
+          'error' => true,
+          'message' => 'File tidak dapat dibaca'
+        ], 500);
+      }
+
+      // Coba buka gambar untuk memastikan file valid
+      $image = @imagecreatefrompng($file->getPathname());
+      if (!$image) {
+        Log::error('Failed to create image from file', [
+          'php_error' => error_get_last()
+        ]);
+        return response()->json([
+          'error' => true,
+          'message' => 'File PNG tidak valid atau rusak'
+        ], 400);
+      }
+      imagedestroy($image);
+
       $lsb = new \App\Helpers\LSBSteganography();
+      Log::info('Attempting to validate certificate using LSB');
 
       // Validasi sertifikat
       $extractedData = $lsb->validateCertificate($file->getPathname());
+      Log::info('LSB validation result', ['extracted_data' => $extractedData]);
 
       if (!$extractedData) {
+        Log::warning('Certificate validation failed - no data extracted');
         return response()->json([
           'error' => true,
           'message' => 'Sertifikat tidak valid atau telah dimodifikasi'
         ], 400);
       }
 
+      Log::info('Certificate validation successful');
       return response()->json([
         'error' => false,
         'message' => 'Sertifikat valid',
         'data' => $extractedData
       ]);
     } catch (\Exception $e) {
-      Log::error('Certificate validation error: ' . $e->getMessage());
+      Log::error('Certificate validation error', [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+      ]);
+
       return response()->json([
         'error' => true,
         'message' => 'Terjadi kesalahan saat memvalidasi sertifikat: ' . $e->getMessage()
