@@ -45,10 +45,19 @@ class ProductController extends Controller
                 ];
             })->toArray();
 
+        $insurances = \App\Models\Insurance::all()
+            ->map(function ($insurance) {
+                return [
+                    'value' => $insurance->id,
+                    'label' => $insurance->name,
+                ];
+            })->toArray();
+
         return Inertia::render('products/editproduct', [
             'product' => $product,
             'categories' => $categories,
             'banks' => $banks,
+            'insurances' => $insurances,
             'cctv_settings' => $product->product_cctvs->first(),
         ]);
     }
@@ -78,6 +87,8 @@ class ProductController extends Controller
             'cctv_ios_app' => 'nullable|string|max:255',
             'guidance' => 'nullable|string|max:255',
             'attachment' => 'nullable|string|max:255',
+            'insurance_id' => 'nullable|exists:insurances,id',
+            'has_payroll_loan' => 'boolean',
 
             'new_document' => 'nullable|file|mimes:pdf|max:5120',
             'new_document_description' => 'nullable|string',

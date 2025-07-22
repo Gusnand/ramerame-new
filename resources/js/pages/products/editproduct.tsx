@@ -1,10 +1,12 @@
 import { DatePicker } from '@/components/date-picker';
 import { useDropzone } from '@/components/dropzone';
-import ImageDropzone from '@/components/dropzone_backup';
 import { FileDropzone } from '@/components/file-dropzone';
 import HeadingSmall from '@/components/heading-small';
+import { ImageDropzone } from '@/components/image-dropzone';
 import RichTextEditor from '@/components/richtext-editor';
+import { SupportingDocDropzone } from '@/components/supporting-doc-dropzone';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -47,6 +49,12 @@ type CCTVSettings = {
   attachment?: string;
 };
 
+type SupportingDocument = {
+  id: number;
+  file_name: string;
+  file_url: string;
+};
+
 type Product = {
   id: number;
   product_name: string;
@@ -74,17 +82,67 @@ type Product = {
   image_2_url: string;
   image_3_url: string;
   documents: ProductDocument[];
+  supporting_documents: SupportingDocument[];
+  insurance_id?: number;
+  has_payroll_loan: boolean;
+};
+
+type FormData = {
+  name: string;
+  category: number;
+  short_content: string;
+  content: string;
+  term: string;
+  term_condition_file: File | null;
+  status: string;
+  expired_date?: Date;
+  invest_month: number;
+  max_slot: number;
+  platform_fee: number;
+  invest_amount: number;
+  invest_duration: number;
+  total_unit: number;
+  price_per_unit: number;
+  remaining_unit: number;
+  image_1: File | null;
+  image_2: File | null;
+  image_3: File | null;
+  account_no: string;
+  on_behalf_of: string;
+  bank_id: number;
+  embed_map: string;
+  address: string;
+  cctv_username: string;
+  cctv_password: string;
+  cctv_cloud_serial: string;
+  cctv_name: string;
+  android_app: string;
+  ios_app: string;
+  guidance: string;
+  attachment: string;
+  new_document: File | null;
+  new_document_description: string;
+  supporting_doc_1: File | null;
+  supporting_doc_2: File | null;
+  supporting_doc_3: File | null;
+  supporting_doc_4: File | null;
+  supporting_doc_5: File | null;
+  supporting_doc_6: File | null;
+  insurance_id: number | null;
+  has_payroll_loan: boolean;
 };
 
 export default function EditProduct({
   product,
   categories,
   banks,
+  insurances,
   cctv_settings,
 }: {
   product: Product;
   categories: Category[];
   banks: Bank[];
+  insurances: { value: number; label: string }[];
   cctv_settings: CCTVSettings | null;
 }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -94,7 +152,7 @@ export default function EditProduct({
     },
   ];
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const { data, setData, put, processing, errors } = useForm({
+  const { data, setData, put, processing, errors } = useForm<FormData>({
     name: product.product_name,
     category: product.product_category_id,
     short_content: product.product_slug,
@@ -130,6 +188,14 @@ export default function EditProduct({
 
     new_document: null as File | null,
     new_document_description: '',
+    supporting_doc_1: null as File | null,
+    supporting_doc_2: null as File | null,
+    supporting_doc_3: null as File | null,
+    supporting_doc_4: null as File | null,
+    supporting_doc_5: null as File | null,
+    supporting_doc_6: null as File | null,
+    insurance_id: product.insurance_id || null,
+    has_payroll_loan: product.has_payroll_loan || false,
   });
 
   const handleSubmit = (e: any) => {
@@ -605,7 +671,100 @@ export default function EditProduct({
                   {errors.attachment && <p className="text-sm text-red-500">{errors.attachment}</p>}
                 </div>
               </div>
-              <Label htmlFor="supporting_doc">Supporting Document</Label>
+              <Label htmlFor="supporting_doc">Supporting Documents</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid items-start gap-2">
+                  <Label htmlFor="supporting_doc_1">Document 1</Label>
+                  <SupportingDocDropzone
+                    file={data.supporting_doc_1}
+                    existingFileUrl={product.supporting_documents?.[0]?.file_url}
+                    existingFileName={product.supporting_documents?.[0]?.file_name}
+                    onFileChange={(file) => setData('supporting_doc_1', file)}
+                  />
+                  {errors.supporting_doc_1 && <p className="text-sm text-red-500">{errors.supporting_doc_1}</p>}
+                </div>
+                <div className="grid items-start gap-2">
+                  <Label htmlFor="supporting_doc_2">Document 2</Label>
+                  <SupportingDocDropzone
+                    file={data.supporting_doc_2}
+                    existingFileUrl={product.supporting_documents?.[1]?.file_url}
+                    existingFileName={product.supporting_documents?.[1]?.file_name}
+                    onFileChange={(file) => setData('supporting_doc_2', file)}
+                  />
+                  {errors.supporting_doc_2 && <p className="text-sm text-red-500">{errors.supporting_doc_2}</p>}
+                </div>
+                <div className="grid items-start gap-2">
+                  <Label htmlFor="supporting_doc_3">Document 3</Label>
+                  <SupportingDocDropzone
+                    file={data.supporting_doc_3}
+                    existingFileUrl={product.supporting_documents?.[2]?.file_url}
+                    existingFileName={product.supporting_documents?.[2]?.file_name}
+                    onFileChange={(file) => setData('supporting_doc_3', file)}
+                  />
+                  {errors.supporting_doc_3 && <p className="text-sm text-red-500">{errors.supporting_doc_3}</p>}
+                </div>
+                <div className="grid items-start gap-2">
+                  <Label htmlFor="supporting_doc_4">Document 4</Label>
+                  <SupportingDocDropzone
+                    file={data.supporting_doc_4}
+                    existingFileUrl={product.supporting_documents?.[3]?.file_url}
+                    existingFileName={product.supporting_documents?.[3]?.file_name}
+                    onFileChange={(file) => setData('supporting_doc_4', file)}
+                  />
+                  {errors.supporting_doc_4 && <p className="text-sm text-red-500">{errors.supporting_doc_4}</p>}
+                </div>
+                <div className="grid items-start gap-2">
+                  <Label htmlFor="supporting_doc_5">Document 5</Label>
+                  <SupportingDocDropzone
+                    file={data.supporting_doc_5}
+                    existingFileUrl={product.supporting_documents?.[4]?.file_url}
+                    existingFileName={product.supporting_documents?.[4]?.file_name}
+                    onFileChange={(file) => setData('supporting_doc_5', file)}
+                  />
+                  {errors.supporting_doc_5 && <p className="text-sm text-red-500">{errors.supporting_doc_5}</p>}
+                </div>
+                <div className="grid items-start gap-2">
+                  <Label htmlFor="supporting_doc_6">Document 6</Label>
+                  <SupportingDocDropzone
+                    file={data.supporting_doc_6}
+                    existingFileUrl={product.supporting_documents?.[5]?.file_url}
+                    existingFileName={product.supporting_documents?.[5]?.file_name}
+                    onFileChange={(file) => setData('supporting_doc_6', file)}
+                  />
+                  {errors.supporting_doc_6 && <p className="text-sm text-red-500">{errors.supporting_doc_6}</p>}
+                </div>
+              </div>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="guarantee_liability" className="mb-2">
+                  Guarantee Liability
+                </Label>
+                <Label htmlFor="insurance">Name of the Guarantee</Label>
+                <Select value={data.insurance_id?.toString() || ''} onValueChange={(value) => setData('insurance_id', value ? Number(value) : null)}>
+                  <SelectTrigger className="mt-1 w-full">
+                    <SelectValue placeholder="Choose insurance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {insurances.map((insurance) => (
+                      <SelectItem key={insurance.value} value={insurance.value.toString()} className="text-sm">
+                        {insurance.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.insurance_id && <p className="text-sm text-red-500">{errors.insurance_id}</p>}
+
+                <div className="flex items-center space-x-2 pt-2">
+                  <Checkbox
+                    id="has_payroll_loan"
+                    checked={data.has_payroll_loan}
+                    onCheckedChange={(checked) => setData('has_payroll_loan', checked as boolean)}
+                  />
+                  <Label htmlFor="has_payroll_loan" className="text-sm font-normal">
+                    Merchants Have Collaborated on Payroll Loan Applications with Koperasi Pertiwi
+                  </Label>
+                </div>
+                {errors.has_payroll_loan && <p className="text-sm text-red-500">{errors.has_payroll_loan}</p>}
+              </div>
             </div>
           </div>
           <div className="flex flex-row justify-end gap-2 px-6">
