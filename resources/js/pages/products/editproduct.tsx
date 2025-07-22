@@ -16,7 +16,7 @@ import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 type Category = {
@@ -197,9 +197,68 @@ export default function EditProduct({
     has_payroll_loan: product.has_payroll_loan || false,
   });
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Format the date to match required format m/d/Y
+    const formattedDate = data.expired_date
+      ? new Date(data.expired_date).toLocaleDateString('en-US', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+        })
+      : null;
+
+    // Debug logging
+    console.log('Form Data Before Submission:', {
+      name: data.name,
+      category: data.category,
+      short_content: data.short_content,
+      expired_date: data.expired_date,
+      formattedDate: formattedDate,
+    });
+
+    // Create form data object matching backend validation exactly
+    const formData = {
+      product_name: data.name || '',
+      product_category_id: Number(data.category) || 0,
+      product_slug: data.short_content || '',
+      content: data.content || '',
+      term: data.term || '',
+      status: data.status || '',
+      expired_date: formattedDate || '',
+      invest_month: Number(data.invest_month) || 0,
+      max_slot: Number(data.max_slot) || 0,
+      platform_fee: Number(data.platform_fee) || 0,
+      invest_amount: Number(data.invest_amount) || 0,
+      account_no: data.account_no || '',
+      on_behalf_of: data.on_behalf_of || product.on_behalf_of || '',
+      bank_id: Number(data.bank_id) || 0,
+      embed_map: data.embed_map || '',
+      address: data.address || '',
+      cctv_username: data.cctv_username || '',
+      cctv_password: data.cctv_password || '',
+      cctv_cloud_serial: data.cctv_cloud_serial || '',
+      cctv_name: data.cctv_name || '',
+      cctv_android_app: data.android_app || '',
+      cctv_ios_app: data.ios_app || '',
+      guidance: data.guidance || '',
+      attachment: data.attachment || '',
+      insurance_id: data.insurance_id || null,
+      has_payroll_loan: Boolean(data.has_payroll_loan),
+    };
+
+    // Debug logging
+    console.log('Final Form Data:', formData);
+
+    // Ensure all required fields are present and not undefined/null
+    if (!formData.product_name || !formData.product_category_id || !formData.product_slug) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     put(route('products.update', product.id), {
+      ...formData,
       preserveScroll: true,
       onSuccess: () => {
         toast.success('Product updated successfully');
@@ -208,9 +267,11 @@ export default function EditProduct({
           router.get('/products');
         }, 1000);
       },
-      onError: (errors) => {
+      onError: (errors: Record<string, string>) => {
         toast.error('Failed to update product. Please check the form for errors.');
         console.error('Update errors:', errors);
+        // Debug logging
+        console.log('Current form values:', data);
         // Highlight first error field
         const firstErrorField = Object.keys(errors)[0];
         if (firstErrorField) {
@@ -222,6 +283,15 @@ export default function EditProduct({
       },
     });
   };
+
+  // Add debug logging when form values change
+  useEffect(() => {
+    console.log('Form data updated:', {
+      name: data.name,
+      category: data.category,
+      short_content: data.short_content,
+    });
+  }, [data.name, data.category, data.short_content]);
 
   const returnPage = () => {
     toast.info('Changes discarded');
@@ -697,9 +767,6 @@ export default function EditProduct({
                 </div>
               </div>
               <div className="grid w-full items-center gap-2">
-                <Label htmlFor="guarantee_liability" className="mb-2">
-                  Guarantee Liability
-                </Label>
                 <Label htmlFor="insurance">Name of the Guarantee</Label>
                 <Select value={data.insurance_id?.toString() || ''} onValueChange={(value) => setData('insurance_id', value ? Number(value) : null)}>
                   <SelectTrigger className="mt-1 w-full">
