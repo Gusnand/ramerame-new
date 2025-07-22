@@ -134,14 +134,26 @@ export default function EditProduct({
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    put(`/products/update/${product.id}`, {
+    put(route('products.update', product.id), {
+      preserveScroll: true,
       onSuccess: () => {
         toast.success('Product updated successfully');
-        router.get('/products');
+        // Add slight delay before redirect to ensure toast is visible
+        setTimeout(() => {
+          router.get('/products');
+        }, 1000);
       },
       onError: (errors) => {
-        toast.error('Failed to update product');
-        console.error(errors);
+        toast.error('Failed to update product. Please check the form for errors.');
+        console.error('Update errors:', errors);
+        // Highlight first error field
+        const firstErrorField = Object.keys(errors)[0];
+        if (firstErrorField) {
+          const element = document.getElementById(firstErrorField);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
       },
     });
   };

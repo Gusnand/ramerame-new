@@ -169,11 +169,12 @@ export default function Certificate({
     post(route('certificates.update', certificate.id), {
       preserveScroll: true,
       onSuccess: () => {
-        setEditMode(false);
         toast.success('Certificate settings updated successfully');
+        setEditMode(false);
       },
       onError: (errors) => {
         toast.error('Failed to update certificate settings');
+        console.error(errors);
       },
     });
   };
