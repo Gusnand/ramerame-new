@@ -22,7 +22,7 @@ import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
-import { CheckCircle2, Download, LoaderCircle, XCircle } from 'lucide-react';
+import { CalendarSync, CheckCircle2, Download, LoaderCircle, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
 
 type Certifier = {
@@ -134,7 +134,7 @@ export default function Certificate({
         message: 'Waktu validasi habis. Silakan coba lagi.',
       });
       setIsValidating(false);
-    }, 30000);
+    }, 10000);
 
     try {
       const response = await fetch(route('certificates.validate'), {
@@ -389,13 +389,13 @@ export default function Certificate({
                   <TableHead className="text-md w-[50px]">No.</TableHead>
                   <TableHead className="text-md w-[300px]">Name</TableHead>
                   <TableHead className="text-md w-[250px]">Email</TableHead>
-                  <TableHead className="text-md w-[200px]">
+                  <TableHead className="text-md w-[180px]">
                     Certificate <br /> Number
                   </TableHead>
                   <TableHead className="text-md w-[80px]">
                     Total <br /> Slot
                   </TableHead>
-                  <TableHead className="text-md w-[150px]">Value</TableHead>
+                  <TableHead className="text-md w-[120px]">Value</TableHead>
                   <TableHead className="text-md w-full text-center"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -410,20 +410,38 @@ export default function Certificate({
                       <TableCell className="text-left">{certifier.total_slot}</TableCell>
                       <TableCell className="text-left">{formatHarga(certifier.slot_price * certifier.total_slot)}</TableCell>
                       <TableCell className="text-left">
-                        {/* <Tooltip>
+                        <Tooltip>
                           <TooltipTrigger>
-                            <Link variant="outline" size="icon" className="cursor-pointer" href={route('certificates.generate', certifier.id)}>
-                              <CalendarSync />
-                            </Link>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                router.post(
+                                  route('certificates.generate', product.id),
+                                  {},
+                                  {
+                                    preserveScroll: true,
+                                    onSuccess: () => {
+                                      // Optional: Refresh data after successful generation
+                                      router.reload();
+                                    },
+                                  },
+                                );
+                              }}
+                            >
+                              <CalendarSync className="h-4 w-4" />
+                            </Button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Generate Certificate</p>
                           </TooltipContent>
-                        </Tooltip> */}
+                        </Tooltip>
+
                         <Tooltip>
                           <TooltipTrigger>
-                            <Link variant="outline" size="icon" className="cursor-pointer" href={route('certificates.download', certifier.id)}>
-                              <Download />
+                            <Link variant="outline" size="icon" className="ml-2 cursor-pointer" href={route('certificates.download', certifier.id)}>
+                              <Download className="h-4 w-4" />
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>
