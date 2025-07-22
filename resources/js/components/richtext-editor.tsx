@@ -36,7 +36,6 @@ import {
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { EditorContent } from './ui/editor-content-tiptap';
-import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 type RichTextEditorProps = {
   value: string;
@@ -50,38 +49,63 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        paragraph: {
+          HTMLAttributes: {
+            class: 'mb-3',
+          },
+        },
+      }),
       Heading.configure({
         levels: [1, 2, 3],
+        HTMLAttributes: {
+          class: 'mb-3',
+        },
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
       Underline,
       Placeholder.configure({
-        placeholder: 'Write here...',
+        placeholder: ({ node }) => {
+          if (node.type.name === 'heading') {
+            return 'Heading';
+          }
+          return 'Write something...';
+        },
+        showOnlyWhenEditable: true,
+        includeChildren: true,
       }),
-      Image,
+      Image.configure({
+        HTMLAttributes: {
+          class: 'rounded-lg max-w-full my-4',
+        },
+      }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-500 underline',
+          class: 'text-primary underline decoration-primary hover:text-primary/80',
         },
       }),
       Highlight.configure({
         HTMLAttributes: {
-          class: 'bg-yellow-200',
+          class: 'bg-yellow-200 dark:bg-yellow-900',
         },
       }),
       CodeBlock.configure({
         HTMLAttributes: {
-          class: 'dark:bg-gray-700 bg-gray-700 p-4 rounded font-mono my-2',
+          class: 'bg-muted/50 p-4 rounded-lg font-mono my-4',
         },
       }),
     ],
     content: value,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm dark:prose-invert focus:outline-none max-w-none',
+      },
     },
   });
 
@@ -141,7 +165,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
 
   return (
     <div className="mt-1 rounded-md border">
-      <div className="flex flex-wrap gap-1 border-gray-200 p-2">
+      <div className="bg-sidebar flex flex-wrap gap-1 border-b p-2">
         {/* Format controls */}
         <Button
           variant="ghost"
@@ -363,13 +387,35 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
-      <ScrollArea>
+
+      {/* Remove ScrollArea wrapper and adjust editor styles */}
+      <div className="relative min-h-[300px] w-full">
         <EditorContent
           editor={editor}
-          className="editor-content min-h-80 p-4 focus-within:shadow-none focus-within:ring-0 focus-within:outline-none focus:border-none focus:ring-0 focus:outline-none"
+          className="prose prose-sm dark:prose-invert h-full w-full p-4 focus-visible:outline-none [&_.ProseMirror]:min-h-[300px] [&_p]:my-0"
         />
-        <ScrollBar className="dark:bg-gray-700" />
-      </ScrollArea>
+      </div>
     </div>
   );
 }
+
+// Add these styles to your global CSS (app.css or similar):
+/*
+.ProseMirror {
+  > * + * {
+    margin-top: 0.75em;
+  }
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+*/
