@@ -2,6 +2,7 @@ import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { toast } from 'sonner';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
@@ -37,6 +38,12 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
     patch(route('profile.update'), {
       preserveScroll: true,
+      onSuccess: () => {
+        toast.success('Profile updated successfully');
+      },
+      onError: () => {
+        toast.error('Failed to update profile');
+      },
     });
   };
 

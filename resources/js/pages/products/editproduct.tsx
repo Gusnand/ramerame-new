@@ -17,6 +17,7 @@ import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 type Category = {
   id: number;
@@ -133,10 +134,20 @@ export default function EditProduct({
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    put(`/products/update/${product.id}`);
+    put(`/products/update/${product.id}`, {
+      onSuccess: () => {
+        toast.success('Product updated successfully');
+        router.get('/products');
+      },
+      onError: (errors) => {
+        toast.error('Failed to update product');
+        console.error(errors);
+      },
+    });
   };
 
   const returnPage = () => {
+    toast.info('Changes discarded');
     router.get('/products');
   };
 

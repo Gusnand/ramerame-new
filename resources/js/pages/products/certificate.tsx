@@ -24,6 +24,7 @@ import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
 import { CalendarSync, CheckCircle2, Download, LoaderCircle, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 type Certifier = {
   id: number;
@@ -122,72 +123,58 @@ export default function Certificate({
     const formData = new FormData();
     formData.append('certificate', file);
 
-    // Create AbortController for request cancellation
-    const controller = new AbortController();
-    const { signal } = controller;
+    toast.promise(
+      // Your existing validation logic here
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await fetch(route('certificates.validate'), {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'X-XSRF-TOKEN': decodeURIComponent(
+                document.cookie
+                  .split('; ')
+                  .find((row) => row.startsWith('XSRF-TOKEN='))
+                  ?.split('=')[1] || '',
+              ),
+            },
+            credentials: 'include',
+            body: formData,
+          });
 
-    // Set timeout to cancel request after 30 seconds
-    const timeout = setTimeout(() => {
-      controller.abort();
-      setValidationResult({
-        error: true,
-        message: 'Waktu validasi habis. Silakan coba lagi.',
-      });
-      setIsValidating(false);
-    }, 10000);
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+          }
 
-    try {
-      const response = await fetch(route('certificates.validate'), {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'X-XSRF-TOKEN': decodeURIComponent(
-            document.cookie
-              .split('; ')
-              .find((row) => row.startsWith('XSRF-TOKEN='))
-              ?.split('=')[1] || '',
-          ),
-        },
-        credentials: 'include',
-        body: formData,
-        signal,
-      });
-
-      clearTimeout(timeout);
-
-      // Check if response is ok
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      setValidationResult(result);
-    } catch (error: unknown) {
-      clearTimeout(timeout);
-
-      // Only set error if it's not an abort error
-      if (error instanceof Error && error.name !== 'AbortError') {
-        setValidationResult({
-          error: true,
-          message: error.message || 'Terjadi kesalahan saat memvalidasi sertifikat',
-        });
-      }
-    } finally {
-      setIsValidating(false);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-      controller.abort();
-    };
+          const result = await response.json();
+          setValidationResult(result);
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        } finally {
+          setIsValidating(false);
+        }
+      }),
+      {
+        loading: 'Validating certificate...',
+        success: 'Certificate validated successfully',
+        error: (err) => `Validation failed: ${err.message}`,
+      },
+    );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     post(route('certificates.update', certificate.id), {
       preserveScroll: true,
-      onSuccess: () => setEditMode(false),
+      onSuccess: () => {
+        setEditMode(false);
+        toast.success('Certificate settings updated successfully');
+      },
+      onError: (errors) => {
+        toast.error('Failed to update certificate settings');
+      },
     });
   };
 
@@ -423,8 +410,11 @@ export default function Certificate({
                                   {
                                     preserveScroll: true,
                                     onSuccess: () => {
-                                      // Optional: Refresh data after successful generation
+                                      toast.success('Certificate generated successfully');
                                       router.reload();
+                                    },
+                                    onError: () => {
+                                      toast.error('Failed to generate certificate');
                                     },
                                   },
                                 );
@@ -440,7 +430,19 @@ export default function Certificate({
 
                         <Tooltip>
                           <TooltipTrigger>
-                            <Link variant="outline" size="icon" className="ml-2 cursor-pointer" href={route('certificates.download', certifier.id)}>
+                            <Link
+                              variant="outline"
+                              size="icon"
+                              className="ml-2 cursor-pointer"
+                              href={route('certificates.download', certifier.id)}
+                              onClick={() => {
+                                toast.promise(fetch(route('certificates.download', certifier.id)), {
+                                  loading: 'Downloading certificate...',
+                                  success: 'Certificate downloaded successfully',
+                                  error: 'Failed to download certificate',
+                                });
+                              }}
+                            >
                               <Download className="h-4 w-4" />
                             </Link>
                           </TooltipTrigger>

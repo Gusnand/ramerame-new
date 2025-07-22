@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
+import { toast } from 'sonner';
 import InputError from './input-error';
 import TextLink from './text-link';
 import { Checkbox } from './ui/checkbox';
@@ -31,6 +32,12 @@ export function LoginForm({ status, canResetPassword }: LoginProps) {
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
     post(route('login'), {
+      onSuccess: () => {
+        toast.success('Logged in successfully');
+      },
+      onError: () => {
+        toast.error('Invalid credentials');
+      },
       onFinish: () => reset('password'),
     });
   };

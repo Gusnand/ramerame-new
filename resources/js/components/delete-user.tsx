@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
+import { toast } from 'sonner';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -19,8 +20,14 @@ export default function DeleteUser() {
 
     destroy(route('profile.destroy'), {
       preserveScroll: true,
-      onSuccess: () => closeModal(),
-      onError: () => passwordInput.current?.focus(),
+      onSuccess: () => {
+        closeModal();
+        toast.success('Account deleted successfully');
+      },
+      onError: () => {
+        toast.error('Failed to delete account');
+        passwordInput.current?.focus();
+      },
       onFinish: () => reset(),
     });
   };

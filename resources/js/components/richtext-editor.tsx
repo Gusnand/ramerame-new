@@ -34,6 +34,7 @@ import {
   Undo,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { EditorContent } from './ui/editor-content-tiptap';
 import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
@@ -110,24 +111,27 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       const formData = new FormData();
       formData.append('image', file);
 
-      try {
-        const response = await axios.post(`/products/editproduct/upload-image`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-          },
-        });
-
-        if (response.data.success) {
-          editor.chain().focus().setImage({ src: response.data.url }).run();
-        }
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        if (axios.isAxiosError(error)) {
-          console.log('Response status:', error.response?.status);
-          console.log('Response data:', error.response?.data);
-        }
-      }
+      toast.promise(
+        axios
+          .post(`/products/editproduct/upload-image`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            },
+          })
+          .then((response) => {
+            if (response.data.success) {
+              editor.chain().focus().setImage({ src: response.data.url }).run();
+              return response.data;
+            }
+            throw new Error('Failed to upload image');
+          }),
+        {
+          loading: 'Uploading image...',
+          success: 'Image uploaded successfully',
+          error: 'Failed to upload image',
+        },
+      );
     }
   };
 
