@@ -16,7 +16,6 @@ import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
 import { Head, router, useForm } from '@inertiajs/react';
-import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -313,12 +312,6 @@ export default function EditProduct({
                 {errors.term && <p className="text-sm text-red-500">{errors.term}</p>}
               </div>
 
-              {/* <div className="grid w-full items-center gap-2">
-                <Label htmlFor="termInput">Upload your terms & conditions</Label>
-                <Input id="term" type="file" />
-                {errors.term && <p className="text-sm text-sm text-red-500">{errors.term}</p>}
-              </div> */}
-
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="term_condition_file">Terms & Conditions File (PDF)</Label>
                 <FileDropzone file={data.term_condition_file} onFileChange={(file) => setData('term_condition_file', file)} />
@@ -349,104 +342,8 @@ export default function EditProduct({
                 <Label htmlFor="expired_date">Expired Date</Label>
                 <DatePicker value={data.expired_date} onChange={(e) => setData('expired_date', e)}></DatePicker>
               </div>
-              <div className="flex w-full flex-row gap-4">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="max_slot">Max Slot</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="number"
-                    id="max_slot"
-                    placeholder="input your product max slot"
-                    value={data.max_slot}
-                    onChange={(e) => setData('max_slot', Number(e.target.value))}
-                  />
-                  {errors.max_slot && <p className="text-sm text-red-500">{errors.max_slot}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="platform_fee">Platform Fee</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="number"
-                    id="platform_fee"
-                    placeholder="input platform fee"
-                    value={data.platform_fee}
-                    onChange={(e) => setData('platform_fee', Number(e.target.value))}
-                  />
-                  {errors.platform_fee && <p className="text-sm text-red-500">{errors.platform_fee}</p>}
-                </div>
-              </div>
-              <div className="flex w-full flex-row gap-4">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="invest_amount">Invest Amount</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="number"
-                    id="invest_amount"
-                    placeholder="input your invest amount"
-                    value={data.invest_amount}
-                    onChange={(e) => setData('invest_amount', Number(e.target.value))}
-                    disabled={!!data.invest_amount}
-                  />
-                  {errors.invest_amount && <p className="text-sm text-red-500">{errors.invest_amount}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="invest_duration">Invest Duration</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="number"
-                    id="invest_duration"
-                    placeholder="input your invest duration"
-                    value={data.invest_month}
-                    onChange={(e) => setData('invest_month', Number(e.target.value))}
-                  />
-                  {errors.invest_month && <p className="text-sm text-red-500">{errors.invest_month}</p>}
-                </div>
-              </div>
-              <div className="flex w-full flex-row gap-4">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="bank">Bank Account</Label>
-                  <Select value={String(data.bank_id)} onValueChange={(value) => setData('bank_id', Number(value))}>
-                    <SelectTrigger className="mt-1 w-full">
-                      <SelectValue placeholder="Choose bank" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-96 overflow-y-auto">
-                      <SelectGroup>
-                        <SelectLabel>Bank</SelectLabel>
-                        {banks.map((bank) => (
-                          <SelectItem key={bank.value} value={String(bank.value)} className="text-sm">
-                            {bank.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  {errors.bank_id && <p className="text-sm text-red-500">{errors.bank_id}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="account_number">Account Number</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="number"
-                    id="account_number"
-                    placeholder="input your account number"
-                    value={data.account_no}
-                    onChange={(e) => setData('account_no', e.target.value)}
-                  />
-                  {errors.account_no && <p className="text-sm text-red-500">{errors.account_no}</p>}
-                </div>
-              </div>
-              <div className="grid w-full items-center gap-2">
-                <Label htmlFor="account_name">Account Name</Label>
-                <Textarea
-                  className="mt-1 block w-full"
-                  id="account_name"
-                  placeholder="input your account name"
-                  value={data.on_behalf_of}
-                  onChange={(e) => setData('on_behalf_of', e.target.value)}
-                />
-                {errors.on_behalf_of && <p className="text-sm text-red-500">{errors.on_behalf_of}</p>}
-              </div>
-              <div className="flex w-full flex-row gap-4">
+              {/* Unit and Price Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="">Total Unit</Label>
                   <Input
@@ -487,13 +384,118 @@ export default function EditProduct({
                   {errors.remaining_unit && <p className="text-sm text-red-500">{errors.remaining_unit}</p>}
                 </div>
               </div>
+
+              {/* Investment Details Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="invest_amount">Invest Amount</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="invest_amount"
+                    placeholder="input your invest amount"
+                    value={data.invest_amount}
+                    onChange={(e) => setData('invest_amount', Number(e.target.value))}
+                    disabled={!!data.invest_amount}
+                  />
+                  {errors.invest_amount && <p className="text-sm text-red-500">{errors.invest_amount}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="invest_duration">Invest Duration</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="invest_duration"
+                    placeholder="input your invest duration"
+                    value={data.invest_month}
+                    onChange={(e) => setData('invest_month', Number(e.target.value))}
+                  />
+                  {errors.invest_month && <p className="text-sm text-red-500">{errors.invest_month}</p>}
+                </div>
+              </div>
+
+              {/* Slot and Fee Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="max_slot">Max Slot</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="max_slot"
+                    placeholder="input your product max slot"
+                    value={data.max_slot}
+                    onChange={(e) => setData('max_slot', Number(e.target.value))}
+                  />
+                  {errors.max_slot && <p className="text-sm text-red-500">{errors.max_slot}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="platform_fee">Platform Fee</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="platform_fee"
+                    placeholder="input platform fee"
+                    value={data.platform_fee}
+                    onChange={(e) => setData('platform_fee', Number(e.target.value))}
+                  />
+                  {errors.platform_fee && <p className="text-sm text-red-500">{errors.platform_fee}</p>}
+                </div>
+              </div>
+
+              {/* Google Maps Section */}
+              <Label htmlFor="Google Maps Settings">Google Maps Location</Label>
+              <div className="grid w-full gap-4">
+                <div className="grid items-center gap-2">
+                  <Label htmlFor="Address">Address</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="address"
+                    placeholder="Input your product address"
+                    value={data.address}
+                    onChange={(e) => setData('address', e.target.value)}
+                  />
+                  {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
+                </div>
+                <div className="flex flex-col items-start gap-6 md:flex-row">
+                  <div className="grid w-full items-center gap-2 md:w-1/2">
+                    <Label htmlFor="Address">Google Maps Link</Label>
+                    <Textarea
+                      id="embedmap"
+                      placeholder="Input your Google Maps embed link"
+                      value={data.embed_map}
+                      onChange={(e) => setData('embed_map', e.target.value)}
+                      rows={4}
+                    />
+                    {errors.embed_map && <p className="text-sm text-red-500">{errors.embed_map}</p>}
+                  </div>
+
+                  {data.embed_map && (
+                    <div className="w-full items-start gap-2 md:w-1/2">
+                      <Label>Map Preview</Label>
+                      <div className="mt-2 aspect-video h-full w-full self-start overflow-hidden rounded-md">
+                        <iframe
+                          src={data.embed_map}
+                          style={{ border: 0 }}
+                          allowFullScreen={true}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          title="Product Location Map Preview"
+                          className="h-full w-full"
+                        ></iframe>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex-1">
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Additional Product Data" description="Update your other product data" />
+              {/* Product Images Section */}
               <Label htmlFor="Product Images">Product Images</Label>
-              <div className="flex flex-row gap-6">
+              <div className="flex flex-col gap-6 md:flex-row">
                 <div className="grid items-center gap-2">
                   <Label htmlFor="product_image_1">Image 1</Label>
                   <ImageDropzone value={data.image_1 || product.image_1_url} onChange={(file) => setData('image_1', file)} />
@@ -511,168 +513,44 @@ export default function EditProduct({
                 </div>
               </div>
 
-              <Label htmlFor="Google Maps Settings">Google Maps Location</Label>
-              <div className="grid items-center gap-2">
-                <Label htmlFor="Address">Address</Label>
-                <Input
-                  className="mt-1 block w-full"
-                  type="text"
-                  id="address"
-                  placeholder="Input your product address"
-                  value={data.address}
-                  onChange={(e) => setData('address', e.target.value)}
-                />
-                {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
-              </div>
-              <div className="flex flex-row items-start gap-6">
-                <div className="grid items-center gap-2">
-                  <Label htmlFor="Address">Google Maps Link</Label>
-                  <Textarea
-                    id="embedmap"
-                    placeholder="Input your Google Maps embed link"
-                    value={data.embed_map}
-                    onChange={(e) => setData('embed_map', e.target.value)}
-                    rows={4}
-                  />
-                  {errors.embed_map && <p className="text-sm text-red-500">{errors.embed_map}</p>}
+              {/* Bank Account Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="bank">Bank Account</Label>
+                  <Select value={String(data.bank_id)} onValueChange={(value) => setData('bank_id', Number(value))}>
+                    <SelectTrigger className="mt-1 w-full">
+                      <SelectValue placeholder="Choose bank" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-96 overflow-y-auto">
+                      <SelectGroup>
+                        <SelectLabel>Bank</SelectLabel>
+                        {banks.map((bank) => (
+                          <SelectItem key={bank.value} value={String(bank.value)} className="text-sm">
+                            {bank.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {errors.bank_id && <p className="text-sm text-red-500">{errors.bank_id}</p>}
                 </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="account_number">Account Number</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="number"
+                    id="account_number"
+                    placeholder="input your account number"
+                    value={data.account_no}
+                    onChange={(e) => setData('account_no', e.target.value)}
+                  />
+                  {errors.account_no && <p className="text-sm text-red-500">{errors.account_no}</p>}
+                </div>
+              </div>
 
-                {data.embed_map && (
-                  <div className="items-start gap-2">
-                    <Label>Map Preview</Label>
-                    <div className="mt-2 aspect-video h-full w-full self-start overflow-hidden rounded-md">
-                      <iframe
-                        // width="100%"
-                        // height="100%"
-                        src={data.embed_map}
-                        style={{ border: 0 }}
-                        allowFullScreen={true}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title="Product Location Map Preview"
-                      ></iframe>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <Label htmlFor="cctv_settings">CCTV Settings</Label>
-              <div className="flex w-full flex-row gap-6">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="cctv_name">CCTV Name</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="cctv_name"
-                    placeholder="e.g., CCTV Teras Depan"
-                    value={data.cctv_name}
-                    onChange={(e) => setData('cctv_name', e.target.value)}
-                  />
-                  {errors.cctv_name && <p className="text-sm text-red-500">{errors.cctv_name}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="cctv_cloud_serial">Cloud Serial / SN</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="cctv_cloud_serial"
-                    placeholder="e.g., J12345678"
-                    value={data.cctv_cloud_serial}
-                    onChange={(e) => setData('cctv_cloud_serial', e.target.value)}
-                  />
-                  {errors.cctv_cloud_serial && <p className="text-sm text-red-500">{errors.cctv_cloud_serial}</p>}
-                </div>
-              </div>
-              <div className="flex w-full flex-row gap-6">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="cctv_username">CCTV Username</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="cctv_username"
-                    placeholder="e.g., admin"
-                    value={data.cctv_username}
-                    onChange={(e) => setData('cctv_username', e.target.value)}
-                  />
-                  {errors.cctv_username && <p className="text-sm text-red-500">{errors.cctv_username}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="cctv_password">CCTV Password</Label>
-                  <div className="relative">
-                    <Input
-                      className="mt-1 block w-full pr-10"
-                      type={isPasswordVisible ? 'text' : 'password'}
-                      id="cctv_password"
-                      placeholder="Input your CCTV Password"
-                      value={data.cctv_password}
-                      onChange={(e) => setData('cctv_password', e.target.value)}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute inset-y-0 right-0 h-full px-3"
-                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                    >
-                      {isPasswordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  {errors.cctv_password && <p className="text-sm text-red-500">{errors.cctv_password}</p>}
-                </div>
-              </div>
-              <div className="flex w-full flex-row gap-6">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="android_app">Android App</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="android_app"
-                    placeholder="Input your Android App URL"
-                    value={data.android_app}
-                    onChange={(e) => setData('android_app', e.target.value)}
-                  />
-                  {errors.android_app && <p className="text-sm text-red-500">{errors.android_app}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="ios_app">IOS App</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="ios_app"
-                    placeholder="Input your IOS App URL"
-                    value={data.ios_app}
-                    onChange={(e) => setData('ios_app', e.target.value)}
-                  />
-                  {errors.ios_app && <p className="text-sm text-red-500">{errors.ios_app}</p>}
-                </div>
-              </div>
-              <div className="flex w-full flex-row gap-6">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="guidance">Guidance</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="guidance"
-                    placeholder="Input your Android App URL"
-                    value={data.guidance}
-                    onChange={(e) => setData('guidance', e.target.value)}
-                  />
-                  {errors.guidance && <p className="text-sm text-red-500">{errors.guidance}</p>}
-                </div>
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="attachment">Attachment</Label>
-                  <Input
-                    className="mt-1 block w-full"
-                    type="text"
-                    id="attachment"
-                    placeholder="Input your attachment URL"
-                    value={data.attachment}
-                    onChange={(e) => setData('attachment', e.target.value)}
-                  />
-                  {errors.attachment && <p className="text-sm text-red-500">{errors.attachment}</p>}
-                </div>
-              </div>
+              {/* Supporting Documents Section */}
               <Label htmlFor="supporting_doc">Supporting Documents</Label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="grid items-start gap-2">
                   <Label htmlFor="supporting_doc_1">Document 1</Label>
                   <SupportingDocDropzone
@@ -732,6 +610,90 @@ export default function EditProduct({
                     onFileChange={(file) => setData('supporting_doc_6', file)}
                   />
                   {errors.supporting_doc_6 && <p className="text-sm text-red-500">{errors.supporting_doc_6}</p>}
+                </div>
+              </div>
+
+              {/* CCTV Settings Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="cctv_name">CCTV Name</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="cctv_name"
+                    placeholder="e.g., CCTV Teras Depan"
+                    value={data.cctv_name}
+                    onChange={(e) => setData('cctv_name', e.target.value)}
+                  />
+                  {errors.cctv_name && <p className="text-sm text-red-500">{errors.cctv_name}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="cctv_cloud_serial">Cloud Serial / SN</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="cctv_cloud_serial"
+                    placeholder="e.g., J12345678"
+                    value={data.cctv_cloud_serial}
+                    onChange={(e) => setData('cctv_cloud_serial', e.target.value)}
+                  />
+                  {errors.cctv_cloud_serial && <p className="text-sm text-red-500">{errors.cctv_cloud_serial}</p>}
+                </div>
+              </div>
+
+              {/* App URLs Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="android_app">Android App</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="android_app"
+                    placeholder="Input your Android App URL"
+                    value={data.android_app}
+                    onChange={(e) => setData('android_app', e.target.value)}
+                  />
+                  {errors.android_app && <p className="text-sm text-red-500">{errors.android_app}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="ios_app">IOS App</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="ios_app"
+                    placeholder="Input your IOS App URL"
+                    value={data.ios_app}
+                    onChange={(e) => setData('ios_app', e.target.value)}
+                  />
+                  {errors.ios_app && <p className="text-sm text-red-500">{errors.ios_app}</p>}
+                </div>
+              </div>
+
+              {/* Guidance and Attachment Section */}
+              <div className="flex w-full flex-col gap-4 md:flex-row">
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="guidance">Guidance</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="guidance"
+                    placeholder="Input your guidance"
+                    value={data.guidance}
+                    onChange={(e) => setData('guidance', e.target.value)}
+                  />
+                  {errors.guidance && <p className="text-sm text-red-500">{errors.guidance}</p>}
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="attachment">Attachment</Label>
+                  <Input
+                    className="mt-1 block w-full"
+                    type="text"
+                    id="attachment"
+                    placeholder="Input your attachment URL"
+                    value={data.attachment}
+                    onChange={(e) => setData('attachment', e.target.value)}
+                  />
+                  {errors.attachment && <p className="text-sm text-red-500">{errors.attachment}</p>}
                 </div>
               </div>
               <div className="grid w-full items-center gap-2">
