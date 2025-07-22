@@ -1,16 +1,15 @@
 import { DatePicker } from '@/components/date-picker';
-import { Dropzone, DropZoneArea, DropzoneMessage, DropzoneTrigger, useDropzone } from '@/components/dropzone';
+import { useDropzone } from '@/components/dropzone';
 import ImageDropzone from '@/components/dropzone_backup';
+import { FileDropzone } from '@/components/file-dropzone';
 import HeadingSmall from '@/components/heading-small';
 import RichTextEditor from '@/components/richtext-editor';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/shadcn/style.css';
@@ -101,6 +100,7 @@ export default function EditProduct({
     short_content: product.product_slug,
     content: product.content,
     term: product.term,
+    term_condition_file: null as File | null,
     status: product.status,
     expired_date: product.expired_date,
     invest_month: product.invest_month,
@@ -204,7 +204,7 @@ export default function EditProduct({
                   value={data.name}
                   onChange={(e) => setData('name', e.target.value)}
                 />
-                {errors.name && <p className="text-red-500">{errors.name}</p>}
+                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
               </div>
 
               <div className="grid w-full items-center gap-2">
@@ -221,7 +221,7 @@ export default function EditProduct({
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.category && <p className="text-red-500">{errors.category}</p>}
+                {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
               </div>
 
               <div className="grid w-full items-center gap-2">
@@ -233,43 +233,31 @@ export default function EditProduct({
                   value={data.short_content}
                   onChange={(e) => setData('short_content', e.target.value)}
                 />
-                {errors.short_content && <p className="text-red-500">{errors.short_content}</p>}
+                {errors.short_content && <p className="text-sm text-red-500">{errors.short_content}</p>}
               </div>
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="content">Content</Label>
                 <RichTextEditor value={data.content} onChange={(e) => setData('content', e)} />
-                {errors.content && <p className="text-red-500">{errors.content}</p>}
+                {errors.content && <p className="text-sm text-red-500">{errors.content}</p>}
               </div>
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="term">Terms & Conditions</Label>
                 <RichTextEditor value={data.term} onChange={(e) => setData('term', e)} />
-                {errors.term && <p className="text-red-500">{errors.term}</p>}
+                {errors.term && <p className="text-sm text-red-500">{errors.term}</p>}
               </div>
 
               {/* <div className="grid w-full items-center gap-2">
                 <Label htmlFor="termInput">Upload your terms & conditions</Label>
                 <Input id="term" type="file" />
-                {errors.term && <p className="text-sm text-red-500">{errors.term}</p>}
+                {errors.term && <p className="text-sm text-sm text-red-500">{errors.term}</p>}
               </div> */}
 
-              <Dropzone {...dropzone}>
-                <div className="flex justify-between">
-                  <DropzoneMessage />
-                </div>
-                <DropZoneArea>
-                  <DropzoneTrigger className="flex gap-8 bg-transparent text-sm">
-                    <Avatar className={cn(isPending && 'animate-pulse')}>
-                      <AvatarImage className="object-cover" src={avatarSrc} />
-                      <AvatarFallback>JG</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col gap-1 font-semibold">
-                      <p>Upload a new avatar</p>
-                      <p className="text-muted-foreground text-xs">Please select an image smaller than 10MB</p>
-                    </div>
-                  </DropzoneTrigger>
-                </DropZoneArea>
-              </Dropzone>
+              <div className="grid w-full items-center gap-2">
+                <Label htmlFor="term_condition_file">Terms & Conditions File (PDF)</Label>
+                <FileDropzone file={data.term_condition_file} onFileChange={(file) => setData('term_condition_file', file)} />
+                {errors.term_condition_file && <p className="text-sm text-red-500">{errors.term_condition_file}</p>}
+              </div>
 
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="status">Status</Label>
@@ -289,7 +277,7 @@ export default function EditProduct({
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.status && <p className="text-red-500">{errors.status}</p>}
+                {errors.status && <p className="text-sm text-red-500">{errors.status}</p>}
               </div>
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="expired_date">Expired Date</Label>
@@ -306,7 +294,7 @@ export default function EditProduct({
                     value={data.max_slot}
                     onChange={(e) => setData('max_slot', Number(e.target.value))}
                   />
-                  {errors.max_slot && <p className="text-red-500">{errors.max_slot}</p>}
+                  {errors.max_slot && <p className="text-sm text-red-500">{errors.max_slot}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="platform_fee">Platform Fee</Label>
@@ -318,7 +306,7 @@ export default function EditProduct({
                     value={data.platform_fee}
                     onChange={(e) => setData('platform_fee', Number(e.target.value))}
                   />
-                  {errors.platform_fee && <p className="text-red-500">{errors.platform_fee}</p>}
+                  {errors.platform_fee && <p className="text-sm text-red-500">{errors.platform_fee}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
@@ -333,7 +321,7 @@ export default function EditProduct({
                     onChange={(e) => setData('invest_amount', Number(e.target.value))}
                     disabled={!!data.invest_amount}
                   />
-                  {errors.invest_amount && <p className="text-red-500">{errors.invest_amount}</p>}
+                  {errors.invest_amount && <p className="text-sm text-red-500">{errors.invest_amount}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="invest_duration">Invest Duration</Label>
@@ -345,7 +333,7 @@ export default function EditProduct({
                     value={data.invest_month}
                     onChange={(e) => setData('invest_month', Number(e.target.value))}
                   />
-                  {errors.invest_month && <p className="text-red-500">{errors.invest_month}</p>}
+                  {errors.invest_month && <p className="text-sm text-red-500">{errors.invest_month}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
@@ -366,7 +354,7 @@ export default function EditProduct({
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {errors.bank_id && <p className="text-red-500">{errors.bank_id}</p>}
+                  {errors.bank_id && <p className="text-sm text-red-500">{errors.bank_id}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="account_number">Account Number</Label>
@@ -378,7 +366,7 @@ export default function EditProduct({
                     value={data.account_no}
                     onChange={(e) => setData('account_no', e.target.value)}
                   />
-                  {errors.account_no && <p className="text-red-500">{errors.account_no}</p>}
+                  {errors.account_no && <p className="text-sm text-red-500">{errors.account_no}</p>}
                 </div>
               </div>
               <div className="grid w-full items-center gap-2">
@@ -390,7 +378,7 @@ export default function EditProduct({
                   value={data.on_behalf_of}
                   onChange={(e) => setData('on_behalf_of', e.target.value)}
                 />
-                {errors.on_behalf_of && <p className="text-red-500">{errors.on_behalf_of}</p>}
+                {errors.on_behalf_of && <p className="text-sm text-red-500">{errors.on_behalf_of}</p>}
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="grid w-full items-center gap-2">
@@ -404,7 +392,7 @@ export default function EditProduct({
                     onChange={(e) => setData('total_unit', Number(e.target.value))}
                     disabled={!!data.total_unit}
                   />
-                  {errors.total_unit && <p className="text-red-500">{errors.total_unit}</p>}
+                  {errors.total_unit && <p className="text-sm text-red-500">{errors.total_unit}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="">Price per Unit</Label>
@@ -417,7 +405,7 @@ export default function EditProduct({
                     onChange={(e) => setData('price_per_unit', Number(e.target.value))}
                     disabled={!!data.price_per_unit}
                   />
-                  {errors.price_per_unit && <p className="text-red-500">{errors.price_per_unit}</p>}
+                  {errors.price_per_unit && <p className="text-sm text-red-500">{errors.price_per_unit}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="">Remaining Unit</Label>
@@ -430,7 +418,7 @@ export default function EditProduct({
                     onChange={(e) => setData('remaining_unit', Number(e.target.value))}
                     disabled={!!data.remaining_unit}
                   />
-                  {errors.remaining_unit && <p className="text-red-500">{errors.remaining_unit}</p>}
+                  {errors.remaining_unit && <p className="text-sm text-red-500">{errors.remaining_unit}</p>}
                 </div>
               </div>
             </div>
@@ -443,17 +431,17 @@ export default function EditProduct({
                 <div className="grid items-center gap-2">
                   <Label htmlFor="product_image_1">Image 1</Label>
                   <ImageDropzone value={data.image_1 || product.image_1_url} onChange={(file) => setData('image_1', file)} />
-                  {errors.image_1 && <p className="text-red-500">{errors.image_1}</p>}
+                  {errors.image_1 && <p className="text-sm text-red-500">{errors.image_1}</p>}
                 </div>
                 <div className="grid items-center gap-2">
                   <Label htmlFor="product_image_2">Image 2</Label>
                   <ImageDropzone value={data.image_2 || product.image_2_url} onChange={(file) => setData('image_2', file)} />
-                  {errors.image_2 && <p className="text-red-500">{errors.image_2}</p>}
+                  {errors.image_2 && <p className="text-sm text-red-500">{errors.image_2}</p>}
                 </div>
                 <div className="grid items-center gap-2">
                   <Label htmlFor="product_image_3">Image 3</Label>
                   <ImageDropzone value={data.image_3 || product.image_3_url} onChange={(file) => setData('image_3', file)} />
-                  {errors.image_3 && <p className="text-red-500">{errors.image_3}</p>}
+                  {errors.image_3 && <p className="text-sm text-red-500">{errors.image_3}</p>}
                 </div>
               </div>
 
@@ -468,7 +456,7 @@ export default function EditProduct({
                   value={data.address}
                   onChange={(e) => setData('address', e.target.value)}
                 />
-                {errors.address && <p className="text-red-500">{errors.address}</p>}
+                {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
               </div>
               <div className="flex flex-row items-start gap-6">
                 <div className="grid items-center gap-2">
@@ -480,7 +468,7 @@ export default function EditProduct({
                     onChange={(e) => setData('embed_map', e.target.value)}
                     rows={4}
                   />
-                  {errors.embed_map && <p className="text-red-500">{errors.embed_map}</p>}
+                  {errors.embed_map && <p className="text-sm text-red-500">{errors.embed_map}</p>}
                 </div>
 
                 {data.embed_map && (
@@ -513,7 +501,7 @@ export default function EditProduct({
                     value={data.cctv_name}
                     onChange={(e) => setData('cctv_name', e.target.value)}
                   />
-                  {errors.cctv_name && <p className="text-red-500">{errors.cctv_name}</p>}
+                  {errors.cctv_name && <p className="text-sm text-red-500">{errors.cctv_name}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="cctv_cloud_serial">Cloud Serial / SN</Label>
@@ -525,7 +513,7 @@ export default function EditProduct({
                     value={data.cctv_cloud_serial}
                     onChange={(e) => setData('cctv_cloud_serial', e.target.value)}
                   />
-                  {errors.cctv_cloud_serial && <p className="text-red-500">{errors.cctv_cloud_serial}</p>}
+                  {errors.cctv_cloud_serial && <p className="text-sm text-red-500">{errors.cctv_cloud_serial}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-6">
@@ -539,7 +527,7 @@ export default function EditProduct({
                     value={data.cctv_username}
                     onChange={(e) => setData('cctv_username', e.target.value)}
                   />
-                  {errors.cctv_username && <p className="text-red-500">{errors.cctv_username}</p>}
+                  {errors.cctv_username && <p className="text-sm text-red-500">{errors.cctv_username}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="cctv_password">CCTV Password</Label>
@@ -562,7 +550,7 @@ export default function EditProduct({
                       {isPasswordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
-                  {errors.cctv_password && <p className="text-red-500">{errors.cctv_password}</p>}
+                  {errors.cctv_password && <p className="text-sm text-red-500">{errors.cctv_password}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-6">
@@ -576,7 +564,7 @@ export default function EditProduct({
                     value={data.android_app}
                     onChange={(e) => setData('android_app', e.target.value)}
                   />
-                  {errors.android_app && <p className="text-red-500">{errors.android_app}</p>}
+                  {errors.android_app && <p className="text-sm text-red-500">{errors.android_app}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="ios_app">IOS App</Label>
@@ -588,7 +576,7 @@ export default function EditProduct({
                     value={data.ios_app}
                     onChange={(e) => setData('ios_app', e.target.value)}
                   />
-                  {errors.ios_app && <p className="text-red-500">{errors.ios_app}</p>}
+                  {errors.ios_app && <p className="text-sm text-red-500">{errors.ios_app}</p>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-6">
@@ -602,7 +590,7 @@ export default function EditProduct({
                     value={data.guidance}
                     onChange={(e) => setData('guidance', e.target.value)}
                   />
-                  {errors.guidance && <p className="text-red-500">{errors.guidance}</p>}
+                  {errors.guidance && <p className="text-sm text-red-500">{errors.guidance}</p>}
                 </div>
                 <div className="grid w-full items-center gap-2">
                   <Label htmlFor="attachment">Attachment</Label>
@@ -614,45 +602,10 @@ export default function EditProduct({
                     value={data.attachment}
                     onChange={(e) => setData('attachment', e.target.value)}
                   />
-                  {errors.attachment && <p className="text-red-500">{errors.attachment}</p>}
+                  {errors.attachment && <p className="text-sm text-red-500">{errors.attachment}</p>}
                 </div>
               </div>
-              <Label htmlFor="guidance">Supporting Document</Label>
-              {/* <div className="flex w-full flex-row gap-6">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="file1">Dokumen Tersimpan</Label>
-                  {product.documents.length > 0 ? (
-                    <ul className="mt-2 space-y-2">
-                      {product.documents.map((doc) => (
-                        <li key={doc.id} className="bg-muted/50 flex items-center justify-between rounded-lg border p-3">
-                          <div className="flex items-center gap-3">
-                            <Paperclip className="text-muted-foreground h-5 w-5" />
-                            <div>
-                              <p className="text-sm font-medium">{doc.docname}</p>
-                              <p className="text-muted-foreground text-xs">{doc.description}</p>
-                            </div>
-                          </div>
-                          <Button asChild variant="outline" size="sm">
-                            <a href={`/storage/${doc.path}`} target="_blank" rel="noopener noreferrer">
-                              <Download className="mr-2 h-4 w-4" />
-                              Lihat
-                            </a>
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted-foreground mt-2 text-sm">Belum ada dokumen yang diunggah.</p>
-                  )}
-                </div>
-              </div> */}
-              {/* <div className="flex w-full flex-row gap-6">
-                <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="file1">Upload New Document</Label>
-                  <FileDropzone file={data.new_document} onFileChange={(file) => setData('new_document', file)} />
-                  {errors.new_document && <p className="mt-1 text-sm text-red-600">{errors.new_document}</p>}
-                </div>
-              </div> */}
+              <Label htmlFor="supporting_doc">Supporting Document</Label>
             </div>
           </div>
           <div className="flex flex-row justify-end gap-2 px-6">

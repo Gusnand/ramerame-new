@@ -60,7 +60,7 @@ class ProductController extends Controller
             'product_name' => 'required|string|max:255',
             'product_category_id' => 'required|numeric',
             'product_slug' => 'required|string|max:255',
-            'content' => 'required|string|max:255',
+            'content' => 'required|string',
             'term' => 'required|string',
             'status' => 'required|string',
             'expired_date' => 'required|date_format:m/d/Y',

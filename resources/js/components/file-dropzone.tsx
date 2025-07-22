@@ -5,9 +5,10 @@ import { useDropzone } from 'react-dropzone';
 interface FileDropzoneProps {
   file: File | null;
   onFileChange: (file: File | null) => void;
+  maxSize?: number; // in bytes
 }
 
-export function FileDropzone({ file, onFileChange }: FileDropzoneProps) {
+export function FileDropzone({ file, onFileChange, maxSize }: FileDropzoneProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
@@ -23,6 +24,7 @@ export function FileDropzone({ file, onFileChange }: FileDropzoneProps) {
       'application/pdf': ['.pdf'],
     },
     multiple: false,
+    maxSize: maxSize || 5 * 1024 * 1024, // default 5MB
   });
 
   const removeFile = (e: React.MouseEvent) => {
