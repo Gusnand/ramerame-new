@@ -1,5 +1,5 @@
+import { Calendar } from '@/components/ui/calendar';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import EventCalendar from '@/components/ui/event-calendar';
 import {
   Pagination,
   PaginationContent,
@@ -186,57 +186,83 @@ export default function SalesReport({
               </>
             ) : (
               <>
-                <EventCalendar
+                <Calendar
                   events={dailys.map((daily, index) => ({
                     id: index.toString(),
                     date: daily.sales_date,
                     sales_amount: daily.sales_amount,
-                    has_report: true, // You'll need to add this field in your backend data
+                    has_report: Boolean(daily.report_file),
                   }))}
-                  onDownload={(date) => {
-                    // Implement download logic
-                    console.log('Download report for', date);
+                  onDownload={async (date) => {
+                    try {
+                      const response = await fetch(`/products/sales-report/${productId}/download/${date}`, {
+                        method: 'GET',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      });
+
+                      if (!response.ok) throw new Error('Download failed');
+
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `sales-report-${date}.pdf`;
+                      document.body.appendChild(a);
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                      document.body.removeChild(a);
+                    } catch (error) {
+                      console.error('Error downloading report:', error);
+                    }
                   }}
-                  onUpload={(date) => {
-                    // Implement upload logic
-                    console.log('Upload report for', date);
+                  onUpload={async (date) => {
+                    try {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = '.pdf,.xlsx,.csv';
+
+                      input.onchange = async (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (!file) return;
+
+                        const formData = new FormData();
+                        formData.append('report', file);
+                        formData.append('date', date);
+
+                        const response = await fetch(`/products/sales-report/${productId}/upload`, {
+                          method: 'POST',
+                          body: formData,
+                        });
+
+                        if (!response.ok) throw new Error('Upload failed');
+
+                        window.location.reload();
+                      };
+
+                      input.click();
+                    } catch (error) {
+                      console.error('Error uploading report:', error);
+                    }
                   }}
-                  onDelete={(date) => {
-                    // Implement delete logic
-                    console.log('Delete report for', date);
+                  onDelete={async (date) => {
+                    try {
+                      const response = await fetch(`/products/sales-report/${productId}/delete/${date}`, {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      });
+
+                      if (!response.ok) throw new Error('Delete failed');
+
+                      window.location.reload();
+                    } catch (error) {
+                      console.error('Error deleting report:', error);
+                    }
                   }}
-                  recentUploadDate={dailys.length > 0 ? dailys[0].sales_date : undefined}
                 />
-                <Pagination>
-                  <PaginationContent>
-                    {dailysPagination.map((link, index) => (
-                      <React.Fragment key={index}>
-                        {link.label === '&laquo; Previous' && (
-                          <PaginationItem>
-                            <PaginationPrevious href={link.url || '#'} />
-                          </PaginationItem>
-                        )}
-                        {link.label.match(/^\d+$/) && (
-                          <PaginationItem>
-                            <PaginationLink href={link.url || '#'} isActive={link.active}>
-                              {link.label}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )}
-                        {link.label === '...' && (
-                          <PaginationItem>
-                            <PaginationEllipsis />
-                          </PaginationItem>
-                        )}
-                        {link.label === 'Next &raquo;' && (
-                          <PaginationItem>
-                            <PaginationNext href={link.url || '#'} />
-                          </PaginationItem>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </PaginationContent>
-                </Pagination>
               </>
             )}
           </CardContent>
