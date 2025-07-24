@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -12,11 +13,12 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { formatHarga } from '@/lib/helper';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { FileDown } from 'lucide-react';
+import { Download } from 'lucide-react';
 import React from 'react';
 
 type SalesReportProps = {
@@ -142,7 +144,16 @@ export default function SalesReport({
                             )}
                           </TableCell>
                           <TableCell className="">
-                            <FileDown className="cursor-pointer" />
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Button variant="outline" size="icon" className="cursor-pointer">
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Download PDF</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </TableCell>
                         </TableRow>
                       ))

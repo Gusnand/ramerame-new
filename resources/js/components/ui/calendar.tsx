@@ -10,6 +10,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatHarga } from '@/lib/helper';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, FileDown, Upload, X } from 'lucide-react';
@@ -156,17 +157,26 @@ export function Calendar({ events, onDownload, onUpload, onDelete, className }: 
                         <div className="flex gap-1">
                           {event.has_report ? (
                             <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onDownload(event.date);
-                                }}
-                              >
-                                <FileDown className="h-4 w-4" />
-                              </Button>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDownload(event.date);
+                                      }}
+                                    >
+                                      <FileDown className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Download Report</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button variant="ghost" size="icon" className="text-destructive h-6 w-6" onClick={(e) => e.stopPropagation()}>
@@ -193,17 +203,26 @@ export function Calendar({ events, onDownload, onUpload, onDelete, className }: 
                               </AlertDialog>
                             </>
                           ) : (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpload(event.date);
-                              }}
-                            >
-                              <Upload className="h-4 w-4" />
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onUpload(event.date);
+                                    }}
+                                  >
+                                    <Upload className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Upload Report</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           )}
                         </div>
                       </div>
