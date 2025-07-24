@@ -1,4 +1,5 @@
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import EventCalendar from '@/components/ui/event-calendar';
 import {
   Pagination,
   PaginationContent,
@@ -185,33 +186,27 @@ export default function SalesReport({
               </>
             ) : (
               <>
-                {/* <EventCalendar /> */}
-                <Table>
-                  <TableHeader>
-                    <TableRow className="h-20 w-full">
-                      <TableHead className="text-md w-[50px]">Date</TableHead>
-                      <TableHead className="text-md w-[50px]">Total Sales</TableHead>
-                      <TableHead className="text-md w-[50px]">Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {dailys.length > 0 ? (
-                      dailys.map((daily, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="py-4 break-words whitespace-normal">{daily.sales_date}</TableCell>
-                          <TableCell className="py-4 break-words whitespace-normal">{formatHarga(daily.sales_amount)}</TableCell>
-                          <TableCell className="py-4 break-words whitespace-normal">
-                            <FileDown className="cursor-pointer" />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell>No Data Available</TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                <EventCalendar
+                  events={dailys.map((daily, index) => ({
+                    id: index.toString(),
+                    date: daily.sales_date,
+                    sales_amount: daily.sales_amount,
+                    has_report: true, // You'll need to add this field in your backend data
+                  }))}
+                  onDownload={(date) => {
+                    // Implement download logic
+                    console.log('Download report for', date);
+                  }}
+                  onUpload={(date) => {
+                    // Implement upload logic
+                    console.log('Upload report for', date);
+                  }}
+                  onDelete={(date) => {
+                    // Implement delete logic
+                    console.log('Delete report for', date);
+                  }}
+                  recentUploadDate={dailys.length > 0 ? dailys[0].sales_date : undefined}
+                />
                 <Pagination>
                   <PaginationContent>
                     {dailysPagination.map((link, index) => (
