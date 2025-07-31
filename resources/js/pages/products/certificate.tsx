@@ -399,7 +399,7 @@ export default function Certificate({
                       <TableCell className="text-left">{formatHarga(certifier.slot_price * certifier.total_slot)}</TableCell>
                       <TableCell className="text-left">
                         <Tooltip>
-                          <TooltipTrigger>
+                          <TooltipTrigger asChild>
                             <Button
                               variant="outline"
                               size="icon"
@@ -430,7 +430,7 @@ export default function Certificate({
                         </Tooltip>
 
                         <Tooltip>
-                          <TooltipTrigger>
+                          <TooltipTrigger asChild>
                             <Link
                               variant="outline"
                               size="icon"

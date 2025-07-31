@@ -89,7 +89,7 @@ class ProductController extends Controller
             $data = [
                 'product_name' => $request->input('product_name', $request->input('name')),
                 'product_category_id' => $request->input('product_category_id', $request->input('category')),
-                'product_slug' => Str::slug($request->input('name')),
+                'product_slug' => $request->input('short_content'),
                 'expired_date' => $formattedDate ?? null,
             ];
 
