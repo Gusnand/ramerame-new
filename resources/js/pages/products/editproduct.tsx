@@ -200,14 +200,8 @@ export default function EditProduct({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Format the date to match required format m/d/Y
-    const formattedDate = data.expired_date
-      ? new Date(data.expired_date).toLocaleDateString('en-US', {
-          month: '2-digit',
-          day: '2-digit',
-          year: 'numeric',
-        })
-      : null;
+    // Format the date to YYYY-MM-DD format for MySQL
+    const formattedDate = data.expired_date ? new Date(data.expired_date).toISOString().split('T')[0] : null;
 
     // Debug logging
     console.log('Form Data Before Submission:', {
