@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
+use Inertia\Inertia;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -54,8 +55,9 @@ class DashboardController extends Controller
       'thisMonth' => $thisMonth
     ];
 
-
-    return view('super.index', $content);
+    return Inertia::render('dashboard', [
+      'dashboardData' => $content
+    ]);
   }
 
   public function activeUser()
