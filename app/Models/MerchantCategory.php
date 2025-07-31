@@ -11,6 +11,6 @@ class MerchantCategory extends Model
 
     public function merchants()
     {
-        return $this->hasMany('App\Merchant');
+        return $this->hasMany(Merchant::class);
     }
 }

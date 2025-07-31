@@ -67,12 +67,12 @@ class Product extends Model
 
     public function product_expenses()
     {
-        return $this->hasMany('App\ProductExpense');
+        return $this->hasMany(ProductExpense::class);
     }
 
     public function product_omzets()
     {
-        return $this->hasMany('App\ProductOmzet');
+        return $this->hasMany(ProductOmzet::class);
     }
 
     public function trxEoms()
@@ -102,7 +102,7 @@ class Product extends Model
 
     public function notices()
     {
-        return $this->hasMany('App\ProductNotice');
+        return $this->hasMany(ProductNotice::class);
     }
 
     public function product_insurances()

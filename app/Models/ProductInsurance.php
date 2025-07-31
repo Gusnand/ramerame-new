@@ -23,6 +23,6 @@ class ProductInsurance extends Model
 
     public function insurance()
     {
-        return $this->belongsTo('App\Insurance', 'insurance_id', 'id');
+        return $this->belongsTo(Insurance::class, 'insurance_id', 'id');
     }
 }

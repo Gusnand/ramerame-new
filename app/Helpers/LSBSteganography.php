@@ -8,7 +8,7 @@ use GdImage;
 class LSBSteganography
 {
   private const DELIMITER = "<<EOF>>";
-  private const MAX_DATA_LENGTH = 2048; // Maximum length of data to embed (in bytes)
+  private const MAX_DATA_LENGTH = 2048;
 
   /**
    * Mengkonversi string ke binary dengan encoding yang tepat

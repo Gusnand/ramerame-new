@@ -11,26 +11,26 @@ class Merchant extends Model
 
     public function merchant_category()
     {
-        return $this->belongsTo('App\MerchantCategory');
+        return $this->belongsTo(MerchantCategory::class);
     }
 
     public function campaigns()
     {
-        return $this->hasMany('App\Campaign');
+        return $this->hasMany(Campaign::class);
     }
 
     public function merchandises()
     {
-        return $this->hasMany('App\Merchandise');
+        return $this->hasMany(Merchandise::class);
     }
 
     public function contacts()
     {
-        return $this->hasMany('App\MerchantContact');
+        return $this->hasMany(MerchantContact::class);
     }
 
     public function merchant_user()
     {
-        return $this->belongsToMany('App\User', 'merchant_users', 'merchant_id', 'user_id');
+        return $this->belongsToMany(User::class, 'merchant_users', 'merchant_id', 'user_id');
     }
 }

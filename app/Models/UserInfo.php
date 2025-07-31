@@ -28,41 +28,41 @@ class UserInfo extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
     }
 
     public function user_infos()
     {
-        return $this->hasMany('App\UserInfo');
+        return $this->hasMany(UserInfo::class);
     }
 
     public function detail_user_infos()
     {
-        return $this->hasOne('App\DetailUserInfo');
+        return $this->hasOne(DetailUserInfo::class);
     }
 
     public function ksp_pertiwi_session()
     {
-        return $this->hasOne('App\KspPertiwiSession');
+        return $this->hasOne(KspPertiwiSession::class);
     }
 
     public function province()
     {
-        return $this->hasOne('App\Province', 'id', 'province_id');
+        return $this->hasOne(Province::class, 'id', 'province_id');
     }
 
     public function district()
     {
-        return $this->hasOne('App\District', 'id', 'district_id');
+        return $this->hasOne(District::class, 'id', 'district_id');
     }
 
     public function subdistrict()
     {
-        return $this->hasOne('App\Subdistrict', 'id', 'subdistrict_id');
+        return $this->hasOne(Subdistrict::class, 'id', 'subdistrict_id');
     }
 
     public function village()
     {
-        return $this->hasOne('App\Village', 'id', 'village_id');
+        return $this->hasOne(Village::class, 'id', 'village_id');
     }
 }

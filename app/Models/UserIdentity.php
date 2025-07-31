@@ -25,11 +25,11 @@ class UserIdentity extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
     }
 
     public function detail_user_identities()
     {
-        return $this->hasOne('App\DetailUserIdentity');
+        return $this->hasOne(DetailUserIdentity::class);
     }
 }

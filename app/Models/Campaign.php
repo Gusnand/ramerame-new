@@ -30,36 +30,36 @@ class Campaign extends Model
 
     public function campaign_category()
     {
-        return $this->belongsTo('App\CampaignCategory');
+        return $this->belongsTo(CampaignCategory::class);
     }
 
     public function merchant()
     {
-        return $this->belongsTo('App\Merchant');
+        return $this->belongsTo(Merchant::class);
     }
 
     public function campaign_voucher()
     {
-        return $this->hasMany('App\CampaignVoucher');
+        return $this->hasMany(CampaignVoucher::class);
     }
 
     public function campaign_log()
     {
-        return $this->hasMany('App\CampaignLog');
+        return $this->hasMany(CampaignLog::class);
     }
 
     public function voucher_period()
     {
-        return $this->belongsTo('App\VoucherPeriod');
+        return $this->belongsTo(VoucherPeriod::class);
     }
 
     public function images()
     {
-        return $this->hasMany('App\CampaignImage');
+        return $this->hasMany(CampaignImage::class);
     }
 
     public function invoices()
     {
-        return $this->hasOne('App\CampaignInvoice');
+        return $this->hasOne(CampaignInvoice::class);
     }
 }

@@ -26,31 +26,31 @@ class Merchandise extends Model
 
     public function merchandise_category()
     {
-        return $this->belongsTo('App\MerchandiseCategory');
+        return $this->belongsTo(MerchandiseCategory::class);
     }
 
     public function merchant()
     {
-        return $this->belongsTo('App\Merchant');
+        return $this->belongsTo(Merchant::class);
     }
 
     public function merchandise_voucher()
     {
-        return $this->hasMany('App\MerchandiseVoucher');
+        return $this->hasMany(MerchandiseVoucher::class);
     }
 
     public function merchandise_log()
     {
-        return $this->hasMany('App\MerchandiseLog');
+        return $this->hasMany(MerchandiseLog::class);
     }
 
     public function voucher_period()
     {
-        return $this->belongsTo('App\VoucherPeriod');
+        return $this->belongsTo(VoucherPeriod::class);
     }
 
     public function images()
     {
-        return $this->hasMany('App\MerchandiseImage');
+        return $this->hasMany(MerchandiseImage::class);
     }
 }
