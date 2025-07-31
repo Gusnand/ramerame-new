@@ -87,6 +87,30 @@ class CertificateController extends Controller
     return redirect()->back()->with('success', 'Data sertifikat berhasil dibuat.');
   }
 
+  public function update($id, Request $request)
+  {
+    $certificate = Certificate::findOrFail($id);
+    
+    $validated = $request->validate([
+      'product_name' => 'required|string',
+      'cert_prefix' => 'required|string',
+      'product_location' => 'required|string',
+      'product_duration' => 'required|numeric',
+      'cert_location' => 'required|string',
+      'cert_date_string' => 'required|string',
+      'project_owner_company' => 'nullable|string',
+      'project_owner_name' => 'nullable|string',
+      'project_owner_title' => 'nullable|string',
+      'admin_company' => 'nullable|string',
+      'admin_owner' => 'nullable|string',
+      'admin_title' => 'nullable|string',
+    ]);
+
+    $certificate->update($validated);
+
+    return redirect()->back();
+  }
+
   public function download(Certifier $certifier)
   {
     try {

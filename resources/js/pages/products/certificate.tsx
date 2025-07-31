@@ -73,7 +73,7 @@ export default function Certificate({
       href: route('certificates.edit', product.id),
     },
   ];
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, put, processing, errors, reset } = useForm({
     product_name: certificate.product_name || '',
     cert_prefix: certificate.cert_prefix || '',
     product_location: certificate.product_location || '',
@@ -166,7 +166,7 @@ export default function Certificate({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('certificates.update', certificate.id), {
+    router.put(route('certificates.update', certificate.id), data, {
       preserveScroll: true,
       onSuccess: () => {
         toast.success('Certificate settings updated successfully');
@@ -207,7 +207,7 @@ export default function Certificate({
 
       <div className="flex h-full flex-col gap-6 rounded-xl p-4">
         {/* Certificate Settings Form */}
-        <form onSubmit={handleSubmit} className="ml-4 flex flex-col gap-6">
+        <form id="certificate-form" onSubmit={handleSubmit} className="ml-4 flex flex-col gap-6">
           <div className="flex-1">
             <div className="dark:bg-sidebar flex flex-col space-y-6 rounded-lg border-r px-6 py-6">
               <HeadingSmall title="Certificate Settings" description="Update the general information for this certificate." />
@@ -346,26 +346,26 @@ export default function Certificate({
                 />
                 {errors.project_owner_name && <p className="text-red-500">{errors.project_owner_name}</p>}
               </div>
-              {/* Edit/Save/Cancel buttons */}
-              <div className="flex flex-row justify-end gap-2 px-6">
-                {!editMode ? (
-                  <Button type="button" onClick={handleEdit}>
-                    Edit
-                  </Button>
-                ) : (
-                  <>
-                    <Button type="submit" disabled={processing}>
-                      Save Changes
-                    </Button>
-                    <Button type="button" variant={'outline'} className="ml-2" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         </form>
+        {/* Edit/Save/Cancel buttons */}
+        <div className="flex flex-row justify-end gap-2 px-6">
+          {!editMode ? (
+            <Button type="button" onClick={handleEdit}>
+              Edit
+            </Button>
+          ) : (
+            <>
+              <Button type="submit" form="certificate-form" disabled={processing}>
+                Save Changes
+              </Button>
+              <Button type="button" variant={'outline'} className="ml-2" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </>
+          )}
+        </div>
 
         {/* Certifier's List Section */}
         <div className="flex h-full flex-col gap-6 rounded-xl p-4">

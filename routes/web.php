@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/products/certificate/{id}', [CertificateController::class, 'edit'])
         ->name('certificates.edit');
+    Route::put('/products/certificate/{id}', [CertificateController::class, 'update'])
+        ->name('certificates.update');
     Route::post('/products/certificate/{id}/generate-certificates', [CertificateController::class, 'generateForProduct'])
         ->name('certificates.generate');
     Route::get('/products/certificate/download/{certifier}', [CertificateController::class, 'download'])
