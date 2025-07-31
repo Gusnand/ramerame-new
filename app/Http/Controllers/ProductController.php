@@ -65,14 +65,22 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+
+        // Map the incoming field names to the expected names
+        $data = [
+            'product_name' => $request->input('name'),
+            'product_category_id' => $request->input('category'),
+            'product_slug' => \Illuminate\Support\Str::slug($request->input('name')), // Generate slug from name
+            'expired_date' => date('m/d/Y', strtotime($request->input('expired_date'))),
+        ];
+
         $validated = $request->validate([
-            'product_name' => 'required|string|max:255',
-            'product_category_id' => 'required|numeric',
-            'product_slug' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'category' => 'required|numeric',
+            'expired_date' => 'required|date',
             'content' => 'required|string',
             'term' => 'required|string',
             'status' => 'required|string',
-            'expired_date' => 'required|date_format:m/d/Y',
             'invest_month' => 'required|numeric',
             'account_no' => 'required|string',
             'on_behalf_of' => 'required|string',
@@ -94,7 +102,18 @@ class ProductController extends Controller
             'new_document_description' => 'nullable|string',
         ]);
 
-        $product->update($validated);
+        // Merge the mapped data with other validated fields
+        $dataToUpdate = array_merge($data, [
+            'content' => $validated['content'],
+            'term' => $validated['term'],
+            'status' => $validated['status'],
+            'invest_month' => $validated['invest_month'],
+            'account_no' => $validated['account_no'],
+            'on_behalf_of' => $validated['on_behalf_of'],
+            'bank_id' => $validated['bank_id'],
+        ]);
+
+        $product->update($dataToUpdate);
         $product->product_cctvs()->updateOrCreate(
             ['product_id' => $product->id], // Kondisi untuk mencari record
             [ // Data untuk diupdate atau dibuat
