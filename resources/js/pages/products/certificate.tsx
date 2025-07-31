@@ -123,10 +123,9 @@ export default function Certificate({
     const formData = new FormData();
     formData.append('certificate', file);
 
-    toast.promise(
-      // Your existing validation logic here
-      new Promise(async (resolve, reject) => {
-        try {
+    try {
+      toast.promise(
+        (async () => {
           const response = await fetch(route('certificates.validate'), {
             method: 'POST',
             headers: {
@@ -142,26 +141,37 @@ export default function Certificate({
             body: formData,
           });
 
+          const result = await response.json();
+
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            // Set validation result for UI display
+            setValidationResult({
+              error: true,
+              message: result.message || `HTTP error! status: ${response.status}`,
+            });
+            throw new Error(result.message || `HTTP error! status: ${response.status}`);
           }
 
-          const result = await response.json();
-          setValidationResult(result);
-          resolve(result);
-        } catch (error) {
-          reject(error);
-        } finally {
-          setIsValidating(false);
-        }
-      }),
-      {
-        loading: 'Validating certificate...',
-        success: 'Certificate validated successfully',
-        error: (err) => `Validation failed: ${err.message}`,
-      },
-    );
+          // Set successful validation result
+          setValidationResult({
+            error: false,
+            message: 'Certificate is valid',
+            data: result.data,
+          });
+
+          return result;
+        })(),
+        {
+          loading: 'Validating certificate...',
+          success: 'Certificate validated successfully',
+          error: (err) => `Validation failed: ${err.message}`,
+        },
+      );
+    } catch (error) {
+      console.error('Validation error:', error);
+    } finally {
+      setIsValidating(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -567,30 +577,34 @@ export default function Certificate({
                       <Alert variant={validationResult.error ? 'destructive' : 'default'}>
                         {validationResult.error ? (
                           <>
-                            <XCircle className="h-4 w-4" />
-                            <AlertTitle>Invalid Certificate</AlertTitle>
-                            <AlertDescription>{validationResult.message}</AlertDescription>
+                            <XCircle className="mt-0.5 h-5 w-5 flex-shrink-0" />
+                            <div>
+                              <AlertTitle>Invalid Certificate</AlertTitle>
+                              <AlertDescription>{validationResult.message}</AlertDescription>
+                            </div>
                           </>
                         ) : (
                           <>
-                            <CheckCircle2 className="h-4 w-4" />
-                            <AlertTitle>Valid Certificate</AlertTitle>
-                            <AlertDescription>
-                              <div className="mt-2">
-                                <p>
-                                  <strong>Name:</strong> {validationResult.data?.name}
-                                </p>
-                                <p>
-                                  <strong>Certificate No:</strong> {validationResult.data?.certificate_no}
-                                </p>
-                                <p>
-                                  <strong>Generated At:</strong> {new Date(validationResult.data?.generated_at || '').toLocaleString()}
-                                </p>
-                                <p>
-                                  <strong>Issuer:</strong> {validationResult.data?.issuer}
-                                </p>
-                              </div>
-                            </AlertDescription>
+                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0" />
+                            <div>
+                              <AlertTitle className="pt-0.5 pb-2">Valid Certificate</AlertTitle>
+                              <AlertDescription>
+                                <div className="space-y-1">
+                                  <p className="text-sm">
+                                    <strong>Name:</strong> {validationResult.data?.name}
+                                  </p>
+                                  <p className="text-sm">
+                                    <strong>Certificate No:</strong> {validationResult.data?.certificate_no}
+                                  </p>
+                                  <p className="text-sm">
+                                    <strong>Generated At:</strong> {new Date(validationResult.data?.generated_at || '').toLocaleString()}
+                                  </p>
+                                  <p className="text-sm">
+                                    <strong>Issuer:</strong> {validationResult.data?.issuer}
+                                  </p>
+                                </div>
+                              </AlertDescription>
+                            </div>
                           </>
                         )}
                       </Alert>

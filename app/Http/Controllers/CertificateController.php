@@ -90,7 +90,7 @@ class CertificateController extends Controller
   public function update($id, Request $request)
   {
     $certificate = Certificate::findOrFail($id);
-    
+
     $validated = $request->validate([
       'product_name' => 'required|string',
       'cert_prefix' => 'required|string',
@@ -398,7 +398,7 @@ class CertificateController extends Controller
         Log::warning('Certificate validation failed - no data extracted');
         return response()->json([
           'error' => true,
-          'message' => 'Sertifikat tidak valid atau telah dimodifikasi'
+          'message' => 'Certificate is not Valid, or being modified'
         ], 400);
       }
 
@@ -418,7 +418,7 @@ class CertificateController extends Controller
 
       return response()->json([
         'error' => true,
-        'message' => 'Terjadi kesalahan saat memvalidasi sertifikat: ' . $e->getMessage()
+        'message' => 'There is something wrong when validation the certificate:' . $e->getMessage()
       ], 500);
     }
   }
