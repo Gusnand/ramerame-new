@@ -166,7 +166,7 @@ export default function Certificate({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.put(route('certificates.update', certificate.id), data, {
+    put(route('certificates.update', certificate.id), {
       preserveScroll: true,
       onSuccess: () => {
         toast.success('Certificate settings updated successfully');
@@ -179,7 +179,10 @@ export default function Certificate({
     });
   };
 
-  const handleEdit = () => setEditMode(true);
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setEditMode(true);
+  };
   const handleCancel = () => {
     // Reset form data to original
     setData('product_name', originalData.product_name || '');
