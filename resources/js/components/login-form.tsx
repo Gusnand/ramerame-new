@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 import { toast } from 'sonner';
@@ -98,10 +98,20 @@ export function LoginForm({ status, canResetPassword }: LoginProps) {
                 <Checkbox id="remember" name="remember" checked={data.remember} onClick={() => setData('remember', !data.remember)} tabIndex={3} />
                 <Label htmlFor="remember">Remember me</Label>
               </div>
-              <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
-                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                Log in
-              </Button>
+
+              <div className="flex flex-col gap-2">
+                <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
+                  {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                  Log in
+                </Button>
+
+                <Link href="/validate-certificate">
+                  <Button variant="outline" className="w-full">
+                    Validate Certificate
+                  </Button>
+                </Link>
+              </div>
+
               {/* <Button type="submit" className="w-full">
                 Login
               </Button> */}

@@ -13,6 +13,14 @@ use App\Http\Controllers\CertificateController;
 
 Route::redirect('/', '/login', 301);
 
+Route::get('/validate-certificate', function () {
+    return Inertia::render('validate-certificate');
+})->name('validate-certificate');
+
+Route::post('/validate-certificate/validate', [CertificateController::class, 'validateCertificate'])
+    ->middleware('web')
+    ->name('certificates.validate.public');
+
 Route::get('/test-storage', function () {
     return response()->json([
         'storage_path' => storage_path('app/public'),
