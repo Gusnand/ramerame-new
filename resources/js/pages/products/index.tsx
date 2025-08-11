@@ -105,50 +105,56 @@ export default function Index() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="">{product.id}</TableCell>
-                <TableCell className="">{product.product_name}</TableCell>
-                <TableCell className="text-left">{product.status}</TableCell>
-                <TableCell className="">{product.expired_date}</TableCell>
-                <TableCell className="text-left">{product.invest_month}</TableCell>
-                <TableCell className="text-left">{formatHarga(product.invest_amount)}</TableCell>
-                <TableCell className="w-full text-center">
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Link variant="outline" size="icon" className="cursor-pointer" href={`products/editproduct/${product.id}`}>
-                        <Pencil />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Edit Product</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Link variant="outline" size="icon" className="cursor-pointer" href={`products/sales-report/${product.id}`}>
-                        <CalendarClock />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Sales Report</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Link variant="outline" size="icon" className="cursor-pointer" href={`products/certificate/${product.id}`}>
-                        <FileImage />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Certificate</p>
-                    </TooltipContent>
-                  </Tooltip>
+            {products.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center text-gray-500">
+                  No Product Found
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="">{product.id}</TableCell>
+                  <TableCell className="">{product.product_name}</TableCell>
+                  <TableCell className="text-left">{product.status}</TableCell>
+                  <TableCell className="">{product.expired_date}</TableCell>
+                  <TableCell className="text-left">{product.invest_month}</TableCell>
+                  <TableCell className="text-left">{formatHarga(product.invest_amount)}</TableCell>
+                  <TableCell className="w-full text-center">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Link variant="outline" size="icon" className="cursor-pointer" href={`products/editproduct/${product.id}`}>
+                          <Pencil />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit Product</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Link variant="outline" size="icon" className="cursor-pointer" href={`products/sales-report/${product.id}`}>
+                          <CalendarClock />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Sales Report</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Link variant="outline" size="icon" className="cursor-pointer" href={`products/certificate/${product.id}`}>
+                          <FileImage />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Certificate</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
         {pagination && pagination.last_page > 1 && (
