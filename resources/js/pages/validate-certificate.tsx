@@ -77,7 +77,7 @@ export default function ValidateCertificate() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-4">
+    <div className="bg-muted flex min-h-screen flex-col items-center justify-center p-4">
       <Head title="Validate Certificate" />
       <div className={cn('flex flex-col gap-6')}>
         <Card className="overflow-hidden p-0">
